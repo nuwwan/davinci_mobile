@@ -1,15 +1,17 @@
-import type { TextStyle } from 'react-native';
+import type { ColorName } from './colors';
 
-export type FontFamilies = {
-  /** 400 weight — body & metadata (Inter) */
-  regular: string;
-  /** 500 weight — question copy / emphasized body (Inter) */
-  medium: string;
-  /** 600 weight — section/card headings (display face) */
-  semibold: string;
-  /** 700 weight — screen titles (display face) */
-  bold: string;
-};
+/**
+ * Font family names — must match the faces loaded in app/_layout.tsx and the
+ * `fontFamily` keys in tailwind.config.js. Inter for body, Plus Jakarta for display.
+ */
+export const fontFamilies = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+  displaySemibold: 'PlusJakartaSans_600SemiBold',
+  displayBold: 'PlusJakartaSans_700Bold',
+} as const;
 
 export type TypographyVariant =
   | 'screenTitle'
@@ -21,53 +23,43 @@ export type TypographyVariant =
   | 'hint';
 
 /**
- * Sizes/line heights mirror davinci_web's Tailwind type scale
- * (`page-title` / `section` / `card-title` / `question` / `body` / `meta` / `hint`).
- * Weight comes from the embedded font face (no `fontWeight` here).
+ * Tailwind class per typography variant — size + line-height + font face.
+ * Mirrors the web type scale (page-title / section / card-title / question / body / meta / hint).
  */
-const variants: Record<TypographyVariant, Pick<TextStyle, 'fontSize' | 'lineHeight'>> = {
-  screenTitle: { fontSize: 32, lineHeight: 38 },     // page-title 32 / 1.2
-  sectionHeading: { fontSize: 24, lineHeight: 31 },  // section 24 / 1.3
-  cardHeading: { fontSize: 18, lineHeight: 25 },     // card-title 18 / 1.4
-  questionBody: { fontSize: 15, lineHeight: 23 },    // question 15 / 1.5
-  body: { fontSize: 14, lineHeight: 21 },            // body 14 / 1.5
-  metadata: { fontSize: 13, lineHeight: 19 },        // meta 13 / 1.45
-  hint: { fontSize: 12, lineHeight: 17 },            // hint 12 / 1.4
+export const VARIANT_TEXT_CLASS: Record<TypographyVariant, string> = {
+  screenTitle: 'text-page-title font-display',
+  sectionHeading: 'text-section font-display-semibold',
+  cardHeading: 'text-card-title font-display-semibold',
+  questionBody: 'text-question font-inter-medium',
+  body: 'text-body font-inter',
+  metadata: 'text-meta font-inter',
+  hint: 'text-hint font-inter',
 };
 
-export function getTypographyStyle(
-  variant: TypographyVariant,
-  fonts: FontFamilies,
-  weight: keyof FontFamilies = weightForVariant(variant)
-): TextStyle {
-  const base = variants[variant];
-  return {
-    ...base,
-    fontFamily: fonts[weight],
-  };
-}
-
-function weightForVariant(variant: TypographyVariant): keyof FontFamilies {
-  switch (variant) {
-    case 'screenTitle':
-      return 'bold';
-    case 'sectionHeading':
-    case 'cardHeading':
-      return 'semibold';
-    case 'questionBody':
-      return 'medium';
-    default:
-      return 'regular';
-  }
-}
-
-/**
- * Default font family map: Inter for body weights (400/500),
- * Plus Jakarta Sans for display weights (600/700) — mirrors the web stack.
- */
-export const interFontNames = {
-  regular: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
-  semibold: 'PlusJakartaSans_600SemiBold',
-  bold: 'PlusJakartaSans_700Bold',
-} as const satisfies FontFamilies;
+/** Text-color class per semantic color token (matches tailwind.config.js color names). */
+export const COLOR_TEXT_CLASS: Record<ColorName, string> = {
+  primary: 'text-primary',
+  primaryHover: 'text-primary-hover',
+  primaryLight: 'text-primary-light',
+  primaryMuted: 'text-primary-muted',
+  secondary: 'text-secondary',
+  secondaryLight: 'text-secondary-light',
+  surface: 'text-surface',
+  surface2: 'text-surface-2',
+  surface3: 'text-surface-3',
+  border: 'text-border',
+  borderStrong: 'text-border-strong',
+  textPrimary: 'text-t-primary',
+  textSecondary: 'text-t-secondary',
+  textTertiary: 'text-t-tertiary',
+  textInverse: 'text-t-inverse',
+  correct: 'text-correct',
+  correctBg: 'text-correct-bg',
+  correctBorder: 'text-correct-border',
+  wrong: 'text-wrong',
+  wrongBg: 'text-wrong-bg',
+  wrongBorder: 'text-wrong-border',
+  streak: 'text-streak',
+  streakBg: 'text-streak-bg',
+  scrim: 'text-scrim',
+};

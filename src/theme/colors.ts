@@ -1,12 +1,12 @@
 /**
  * Single source of truth for color hex values in the mobile app.
  *
- * This file mirrors `davinci_web/src/theme/tokens.css` (emerald + slate + gold).
- * Both platforms share the same semantic token names, so screens can move
- * between web and mobile without re-mapping colors.
+ * This file mirrors `davinci_web/src/theme/tokens.css` and `global.css` (emerald +
+ * slate + gold). It is the source for IMPERATIVE colors only (icons, spinners,
+ * navigation theme) consumed via `useTheme().colors`.
  *
- * Other modules consume the resolved `AppTheme` via `useTheme()` — do not
- * import this file from UI code.
+ * For styling, use Tailwind/NativeWind classes (bg-primary, text-t-secondary, …),
+ * whose values come from the CSS variables in global.css. Keep both in sync.
  */
 
 export const lightColors = {
@@ -85,3 +85,6 @@ export const darkColors = {
 } as const;
 
 export type ColorName = keyof typeof lightColors;
+
+/** Resolved color map for one scheme (used for imperative colors: icons, spinners, nav theme). */
+export type ThemeColors = Record<ColorName, string>;

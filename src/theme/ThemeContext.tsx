@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { colorScheme as nwColorScheme, useColorScheme } from 'nativewind';
 import React, {
   createContext,
   useCallback,
@@ -7,35 +8,30 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { useColorScheme as useSystemColorScheme } from 'react-native';
 
-import { buildNavigationTheme, buildTheme, type AppTheme } from './build-theme';
-import { interFontNames, type FontFamilies } from './typography';
+import { buildNavigationTheme } from './build-theme';
+import { darkColors, lightColors, type ThemeColors } from './colors';
 
 const THEME_PREFERENCE_KEY = 'theme_preference';
 
 export type ThemePreference = 'light' | 'dark' | 'system';
 
 type ThemeContextValue = {
-  theme: AppTheme;
-  /** Resolved light/dark for painting UI */
+  /** Resolved color tokens for the active scheme (imperative use: icons, spinners, nav). */
+  colors: ThemeColors;
+  /** True when the dark scheme is currently applied. */
   isDark: boolean;
   preference: ThemePreference;
   setPreference: (value: ThemePreference) => Promise<void>;
-  /** Toggles between light and dark and persists as an explicit preference */
+  /** Flip between light and dark and persist the choice. */
   toggleTheme: () => Promise<void>;
   navigationTheme: ReturnType<typeof buildNavigationTheme>;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-type ThemeProviderProps = {
-  children: React.ReactNode;
-  fontFamilies?: FontFamilies;
-};
-
-export function ThemeProvider({ children, fontFamilies }: ThemeProviderProps) {
-  const systemScheme = useSystemColorScheme() ?? 'light';
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const { colorScheme } = useColorScheme();
   const [preference, setPreferenceState] = useState<ThemePreference>('system');
 
   useEffect(() => {
@@ -46,6 +42,7 @@ export function ThemeProvider({ children, fontFamilies }: ThemeProviderProps) {
         if (cancelled) return;
         if (stored === 'light' || stored === 'dark' || stored === 'system') {
           setPreferenceState(stored);
+          nwColorScheme.set(stored);
         }
       } catch {
         /* keep system default */
@@ -56,39 +53,24 @@ export function ThemeProvider({ children, fontFamilies }: ThemeProviderProps) {
     };
   }, []);
 
-  const fonts = fontFamilies ?? interFontNames;
-
-  const isDark = useMemo(() => {
-    if (preference === 'system') {
-      return systemScheme === 'dark';
-    }
-    return preference === 'dark';
-  }, [preference, systemScheme]);
-
-  const theme = useMemo(() => buildTheme(isDark, fonts), [isDark, fonts]);
-
-  const navigationTheme = useMemo(() => buildNavigationTheme(theme, isDark), [theme, isDark]);
+  const isDark = colorScheme === 'dark';
+  const colors = useMemo<ThemeColors>(() => (isDark ? darkColors : lightColors), [isDark]);
+  const navigationTheme = useMemo(() => buildNavigationTheme(colors, isDark), [colors, isDark]);
 
   const setPreference = useCallback(async (value: ThemePreference) => {
     setPreferenceState(value);
+    nwColorScheme.set(value);
     await SecureStore.setItemAsync(THEME_PREFERENCE_KEY, value);
   }, []);
 
-  const toggleTheme = useCallback(async () => {
-    const next: ThemePreference = isDark ? 'light' : 'dark';
-    await setPreference(next);
-  }, [isDark, setPreference]);
+  const toggleTheme = useCallback(
+    () => setPreference(isDark ? 'light' : 'dark'),
+    [isDark, setPreference]
+  );
 
   const value = useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      isDark,
-      preference,
-      setPreference,
-      toggleTheme,
-      navigationTheme,
-    }),
-    [theme, isDark, preference, setPreference, toggleTheme, navigationTheme]
+    () => ({ colors, isDark, preference, setPreference, toggleTheme, navigationTheme }),
+    [colors, isDark, preference, setPreference, toggleTheme, navigationTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
