@@ -1,21 +1,31 @@
 /**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
+ * Legacy bridge for starter components — resolves tokens from `useTheme()`.
+ * Prefer Tailwind `className` (e.g. text-t-primary) in new code.
  */
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme } from '@/src/theme';
+
+const legacyMap = {
+  text: 'textPrimary',
+  background: 'surface3',
+  tint: 'primary',
+  icon: 'textSecondary',
+  tabIconDefault: 'textTertiary',
+  tabIconSelected: 'primary',
+} as const;
+
+export type LegacyThemeColorName = keyof typeof legacyMap;
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
+  colorName: LegacyThemeColorName
 ) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+  const { colors, isDark } = useTheme();
+  const colorFromProps = props[isDark ? 'dark' : 'light'];
 
   if (colorFromProps) {
     return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
   }
+
+  return colors[legacyMap[colorName]];
 }

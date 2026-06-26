@@ -1,0 +1,9 @@
+{
+  "schemaFile": "../davinci_backend/docs/openapi.json",
+  "apiFile": "./src/api/baseApi.ts",
+  "apiImport": "baseApi",
+  "outputFile": "./src/api/generated.ts",
+  "exportName": "davinciApi",
+  "hooks": { "queries": true, "lazyQueries": true, "mutations": true },
+  "tag": true
+}

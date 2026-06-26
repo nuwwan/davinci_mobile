@@ -1,6 +1,8 @@
-# Welcome to your Expo app 👋
+# DaVinci Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo + React Native client for the DaVinci MCQ learning platform. Uses
+Redux Toolkit + RTK Query for all server state, with typed hooks generated
+from the backend's OpenAPI spec.
 
 ## Get started
 
@@ -10,20 +12,77 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Configure the API base URL
+
+   ```bash
+   cp .env.example .env.local
+   # then edit EXPO_PUBLIC_API_URL if the backend isn't on localhost:8000
+   ```
+
+3. Start the app
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+In the output you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+You can start developing by editing the files inside the **app** directory.
+This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## State management
+
+| Concern | Where it lives |
+|---|---|
+| Server state (every backend call) | RTK Query (`src/api/baseApi.ts`, `enhanced.ts`, `generated.ts`) |
+| Auth tokens + current user | `src/features/auth/authSlice.ts` |
+| Persistent token storage | `expo-secure-store` (Keychain / EncryptedSharedPreferences) via `src/app/secureStorage.ts` |
+| Token refresh on 401 | `baseQueryWithReauth` in `src/api/baseApi.ts` (calls `/auth/refresh`) |
+
+Tokens **never** land in AsyncStorage. The redux-persist storage adapter
+is backed by `expo-secure-store` so the entire auth slice is encrypted at
+rest on both iOS and Android.
+
+## Regenerating the API client
+
+`src/api/generated.ts` is produced from
+`../davinci_backend/docs/openapi.json` and **must not be hand-edited**.
+After the backend's spec changes:
+
+```bash
+# In davinci_backend
+python scripts/export_openapi.py
+
+# In davinci_mobile
+npm run gen:api
+```
+
+Custom tag invalidation, response transforms, and onQueryStarted hooks
+live in `src/api/enhanced.ts` — those survive regeneration.
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Expo dev server |
+| `npm run ios` / `npm run android` / `npm run web` | Open on a specific target |
+| `npm run lint` | `expo lint` |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run gen:api` | Regenerate the typed RTK Query client |
+
+## Tech stack
+
+- Expo 54 + React Native 0.81 + React 19
+- Expo Router for navigation
+- TypeScript 5.9
+- Redux Toolkit + RTK Query, react-redux, redux-persist, async-mutex
+- `expo-secure-store` for tokens
+- `@rtk-query/codegen-openapi` for typed hooks
 
 ## Get a fresh project
 

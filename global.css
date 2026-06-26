@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Design tokens — single source of truth for className colors.
+ * Mirrors davinci_web/src/theme/tokens.css (emerald + slate + gold), expressed as
+ * space-separated RGB channels so Tailwind opacity modifiers (e.g. bg-scrim/40) work.
+ * Keep these values in sync with src/theme/colors.ts (used for imperative colors).
+ */
+@layer base {
+  :root {
+    /* Brand — emerald */
+    --color-primary: 5 150 105;
+    --color-primary-hover: 4 120 87;
+    --color-primary-light: 236 253 245;
+    --color-primary-muted: 167 243 208;
+
+    /* Secondary / accent — gold */
+    --color-secondary: 217 119 6;
+    --color-secondary-light: 255 251 235;
+
+    /* Surfaces — cool slate */
+    --color-surface: 255 255 255;
+    --color-surface-2: 241 245 249;
+    --color-surface-3: 248 250 252;
+
+    /* Borders */
+    --color-border: 226 232 240;
+    --color-border-strong: 203 213 225;
+
+    /* Text */
+    --color-text-primary: 15 23 42;
+    --color-text-secondary: 71 85 105;
+    --color-text-tertiary: 148 163 184;
+    --color-text-inverse: 255 255 255;
+
+    /* Feedback */
+    --color-correct: 5 150 105;
+    --color-correct-bg: 236 253 245;
+    --color-correct-border: 167 243 208;
+    --color-wrong: 225 29 72;
+    --color-wrong-bg: 255 241 242;
+    --color-wrong-border: 254 205 211;
+
+    --color-streak: 217 119 6;
+    --color-streak-bg: 255 251 235;
+
+    /* Scrim (modal / sheet backdrop) */
+    --color-scrim: 15 23 42;
+  }
+
+  .dark:root {
+    --color-primary: 52 211 153;
+    --color-primary-hover: 110 231 183;
+    --color-primary-light: 2 44 34;
+    --color-primary-muted: 6 95 70;
+
+    --color-secondary: 251 191 36;
+    --color-secondary-light: 28 21 0;
+
+    --color-surface: 15 23 42;
+    --color-surface-2: 30 41 59;
+    --color-surface-3: 2 6 23;
+
+    --color-border: 30 41 59;
+    --color-border-strong: 51 65 85;
+
+    --color-text-primary: 241 245 249;
+    --color-text-secondary: 203 213 225;
+    --color-text-tertiary: 100 116 139;
+    --color-text-inverse: 15 23 42;
+
+    --color-correct: 52 211 153;
+    --color-correct-bg: 2 44 34;
+    --color-correct-border: 6 95 70;
+    --color-wrong: 251 113 133;
+    --color-wrong-bg: 45 10 10;
+    --color-wrong-border: 127 29 29;
+
+    --color-streak: 251 191 36;
+    --color-streak-bg: 28 21 0;
+
+    --color-scrim: 15 23 42;
+  }
+}
