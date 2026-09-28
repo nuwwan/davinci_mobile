@@ -1,12 +1,12 @@
 /**
  * Hand-written customizations on top of the auto-generated `davinciApi`.
- * Mirror of davinci_web/src/api/enhanced.ts. Anything here survives
- * `npm run gen:api`.
+ * Anything here survives `npm run gen:api`.
  */
 import { davinciApi as generated } from './generated'
-import type { GetCurrentUserApiResponse } from './generated'
+import type { GetCurrentUserApiResponse, ListSubjectsApiResponse } from './generated'
 import type { TUser } from '../types/user'
 import {
+  bootstrapFinished,
   loggedOut,
   tokensReceived,
   userReceived,
@@ -19,6 +19,8 @@ export const davinciApi = generated.enhanceEndpoints({
         try {
           const { data } = await queryFulfilled
           dispatch(tokensReceived(data))
+          // Immediately hydrate the user slice so every screen has authUser
+          dispatch(davinciApi.endpoints.getCurrentUser.initiate() as any)
         } catch {
           /* noop — error surfaces via mutation result */
         }
@@ -44,24 +46,27 @@ export const davinciApi = generated.enhanceEndpoints({
           if (data?.user) dispatch(userReceived(data.user))
         } catch {
           dispatch(loggedOut())
+        } finally {
+          dispatch(bootstrapFinished())
         }
       },
     },
     updateCurrentUser: {
       invalidatesTags: ['User'],
     },
-
-    searchQuestions: {
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ id }) => ({
-                type: 'Question' as const,
-                id,
-              })),
-              { type: 'Question' as const, id: 'LIST' },
-            ]
-          : [{ type: 'Question' as const, id: 'LIST' }],
+    // After submitting an attempt invalidate the daily-question cache so
+    // is_answered updates to true if re-fetched.
+    createAttemptLearnerAttemptsPost: {
+      invalidatesTags: ['Learner'],
+    },
+    readMyProfileLearnerMeGet: {
+      providesTags: ['User'],
+    },
+    updateMyProfileLearnerMePatch: {
+      invalidatesTags: ['User'],
+    },
+    createMyProfileLearnerMePut: {
+      invalidatesTags: ['User'],
     },
     getQuestion: {
       providesTags: (_r, _e, arg) => [
@@ -83,12 +88,11 @@ export const davinciApi = generated.enhanceEndpoints({
         { type: 'Question', id: 'LIST' },
       ],
     },
-
     listSubjects: {
-      providesTags: (result) =>
+      providesTags: (result: ListSubjectsApiResponse | undefined) =>
         result
           ? [
-              ...result.map(({ id }) => ({
+              ...result.items.map(({ id }) => ({
                 type: 'Subject' as const,
                 id: String(id),
               })),
@@ -120,8 +124,16 @@ export {
   useGetCurrentUserQuery,
   useLazyGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
-  useSearchQuestionsQuery,
-  useLazySearchQuestionsQuery,
+  // Learner
+  useReadDailyQuestionLearnerDailyQuestionGetQuery as useGetDailyQuestionQuery,
+  useLazyReadDailyQuestionLearnerDailyQuestionGetQuery as useLazyGetDailyQuestionQuery,
+  useCreateAttemptLearnerAttemptsPostMutation as useSubmitAttemptMutation,
+  // Learner profile
+  useReadMyProfileLearnerMeGetQuery as useGetMyProfileQuery,
+  useLazyReadMyProfileLearnerMeGetQuery as useLazyGetMyProfileQuery,
+  useUpdateMyProfileLearnerMePatchMutation as usePatchMyProfileMutation,
+  useCreateMyProfileLearnerMePutMutation as usePutMyProfileMutation,
+  // Questions (admin / creator)
   useGetQuestionQuery,
   useLazyGetQuestionQuery,
   useCreateQuestionMutation,
@@ -146,15 +158,33 @@ export type {
   RefreshApiResponse,
   GetCurrentUserApiResponse,
   UpdateCurrentUserApiArg,
+  // Learner
+  ReadDailyQuestionLearnerDailyQuestionGetApiResponse as GetDailyQuestionApiResponse,
+  CreateAttemptLearnerAttemptsPostApiResponse as SubmitAttemptApiResponse,
+  CreateAttemptLearnerAttemptsPostApiArg as SubmitAttemptApiArg,
+  DailyQuestionResponse,
+  AttemptResult,
+  AttemptSubmit,
+  // Learner profile
+  LearnerProfileResponse,
+  LearnerProfilePatch,
+  LearnerProfileUpdate,
+  UserProfileDetail,
+  LearnerProfileDetail,
+  // Questions
   CreateQuestionApiArg,
   UpdateQuestionApiArg,
   DeleteQuestionApiArg,
-  SearchQuestionsApiArg,
+  ListSubjectsApiArg,
   QuestionResponse,
+  QuestionOption,
+  QuestionExplanation,
   QuestionCreate,
   QuestionUpdate,
   QuestionStats,
   SubjectResponse,
   SubjectCreate,
   TokenResponse,
+  UserCreate,
+  UserLogin,
 } from './generated'

@@ -1,0 +1,43 @@
+Mobile app Screens
+will have 5 tabs screen. default tab will be gome page which will 
+1. display welcome screen for non users
+2. display daily question for users if they haven't already answered their daily questions
+    if already answered daily questions: a sections diveded view first will display daily attepmt and score,
+    if he scroll down, display some other questions suggestions
+    question should display with left and right swipt to view user got multiple daily question, usually will be multiple as app 
+    will suggest one question from each subject daily, so user can attempt each by swipping left and right.
+    after attempt, app will display correct or wrong along with explanation. user will be displayed a section to rate the question.user click next and  next question wil be displays, if no more question left, redirecct to home page as considering user has answered all daily questions
+
+secord tab - previous attempts
+will display the daily streak
+will display previous attempsts secodly, each question attemp will be indicated by right or wrong
+and display global attempt of each question, so user gets idea how many people had answer this correct and wrong
+
+third tab : stats
+will display score starts
+-subject wise score/attempts
+- sub area wise score/attempts
+- question difficulty wise score/attempts
+
+fourth tab: info 
+ question settings(medium hard preferences for each subject), subjects user has subscribed into
+sub areas user has subscribed into
+allow user to serach subjects, sub areas under subjects and subscribe into each
+allow follow creators, then in future this will be used by the app to suggest user more related questions from those creators.
+list all thoose subscribers too, then user can unsubscribe or unfollow subjects, sub areas, creators
+
+fifth tab: user
+will display user profile details if user aldeady signed in to, else display to sign in/sign up directives
+which user will go on click and do register/login
+will display app settings,
+
+each page and design should be simple yet informative, for and example, the questioon attempt should display the user's attemp is wright or wrong by indicating red or green sort of
+as well as total attmpts of the question and correct percentage, difficulty level in summary view(list view)
+if user clicks on attempt item, expand it and display when user has attempted, reward, tags, subject, sub area etc.
+further i wish to develop each as a reusable component
+
+i want my mobile app to follow good user experince, consistancy, informative design, shoule be modular and reusable components.
+vibe of the app is more like lms+social media type application which encourage user to keep updated with knowledge in different areas, while creators can make questions. simplicity of the app is very important which makes less distractions for the user
+then user will be more focussed when attmpt questions. but should be detailed and informative using components in ux design, like using colors, icons etc,
+
+auto layouting to support responsive

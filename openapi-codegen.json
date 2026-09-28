@@ -1,5 +1,5 @@
 {
-  "schemaFile": "../davinci_backend/docs/openapi.json",
+  "schemaFile": "./src/api/openapi.yaml",
   "apiFile": "./src/api/baseApi.ts",
   "apiImport": "baseApi",
   "outputFile": "./src/api/generated.ts",

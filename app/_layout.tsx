@@ -19,9 +19,12 @@ import '../global.css';
 
 import { AppProviders } from '@/components/providers/app-providers';
 import { useTheme } from '@/src/theme';
+import { AuthGate } from '@/src/features/auth/AuthGate';
+import { BootstrapAuth } from '@/src/features/auth/BootstrapAuth';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  // Default starting route (used during deep-link cold start)
+  anchor: 'index',
 };
 
 SplashScreen.preventAutoHideAsync();
@@ -53,10 +56,16 @@ export default function RootLayout() {
 
   return (
     <AppProviders>
+      {/* Silently restore session on every cold-start */}
+      <BootstrapAuth />
+      {/* Redirect to login / tabs based on auth state */}
+      <AuthGate />
       <ThemedChrome />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true, title: 'Modal' }} />
       </Stack>
     </AppProviders>
   );

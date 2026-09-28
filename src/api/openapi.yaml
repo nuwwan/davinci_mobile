@@ -1,0 +1,2934 @@
+components:
+  schemas:
+    AdminDailyQuestionResponse:
+      description: Returned when admin sets today's daily question.
+      properties:
+        daily_question_id:
+          format: uuid
+          title: Daily Question Id
+          type: string
+        delivered_date:
+          format: date
+          title: Delivered Date
+          type: string
+        message:
+          title: Message
+          type: string
+        question_id:
+          format: uuid
+          title: Question Id
+          type: string
+      required:
+      - daily_question_id
+      - question_id
+      - delivered_date
+      - message
+      title: AdminDailyQuestionResponse
+      type: object
+    AdminSubAreaResponse:
+      description: Row shape for the admin dashboard sub-area table.
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        is_active:
+          title: Is Active
+          type: boolean
+        subject_id:
+          title: Subject Id
+          type: integer
+        subject_name:
+          title: Subject Name
+          type: string
+        title:
+          title: Title
+          type: string
+      required:
+      - id
+      - title
+      - subject_id
+      - subject_name
+      - is_active
+      - created_at
+      title: AdminSubAreaResponse
+      type: object
+    AttemptResult:
+      description: Response returned immediately after an attempt is submitted.
+      properties:
+        attempt_id:
+          format: uuid
+          title: Attempt Id
+          type: string
+        correct_answer_index:
+          title: Correct Answer Index
+          type: integer
+        explanation:
+          anyOf:
+          - {}
+          - type: 'null'
+          title: Explanation
+        is_correct:
+          title: Is Correct
+          type: boolean
+        question_id:
+          format: uuid
+          title: Question Id
+          type: string
+        score:
+          description: Points awarded (positive) or deducted (negative/zero)
+          title: Score
+          type: integer
+        selected_option_index:
+          title: Selected Option Index
+          type: integer
+      required:
+      - attempt_id
+      - question_id
+      - is_correct
+      - selected_option_index
+      - correct_answer_index
+      - score
+      title: AttemptResult
+      type: object
+    AttemptSubmit:
+      description: Body for POST /learner/attempts.
+      properties:
+        question_id:
+          format: uuid
+          title: Question Id
+          type: string
+        selected_option_index:
+          description: 0-based index of the chosen option
+          minimum: 0.0
+          title: Selected Option Index
+          type: integer
+      required:
+      - question_id
+      - selected_option_index
+      title: AttemptSubmit
+      type: object
+    CreatorSubAreaSubscriptionResponse:
+      description: Returned when a creator subscribes to or unsubscribes from a sub-area.
+      properties:
+        is_active:
+          title: Is Active
+          type: boolean
+        sub_area:
+          $ref: '#/components/schemas/SubAreaResponse'
+        subscribed_at:
+          format: date-time
+          title: Subscribed At
+          type: string
+        subscription_id:
+          format: uuid
+          title: Subscription Id
+          type: string
+      required:
+      - subscription_id
+      - is_active
+      - subscribed_at
+      - sub_area
+      title: CreatorSubAreaSubscriptionResponse
+      type: object
+    CreatorSubjectSubscriptionResponse:
+      description: Returned when a creator subscribes to or unsubscribes from a subject.
+      properties:
+        is_active:
+          title: Is Active
+          type: boolean
+        subject:
+          $ref: '#/components/schemas/SubjectResponse'
+        subscribed_at:
+          format: date-time
+          title: Subscribed At
+          type: string
+        subscription_id:
+          format: uuid
+          title: Subscription Id
+          type: string
+      required:
+      - subscription_id
+      - is_active
+      - subscribed_at
+      - subject
+      title: CreatorSubjectSubscriptionResponse
+      type: object
+    CreatorSummaryResponse:
+      properties:
+        question_attempts:
+          title: Question Attempts
+          type: integer
+        question_likes:
+          title: Question Likes
+          type: integer
+        questions_count:
+          title: Questions Count
+          type: integer
+        tags_count:
+          title: Tags Count
+          type: integer
+      required:
+      - questions_count
+      - tags_count
+      - question_attempts
+      - question_likes
+      title: CreatorSummaryResponse
+      type: object
+    DailyQuestionResponse:
+      description: Payload returned when a learner fetches today's daily question.
+      properties:
+        daily_question_id:
+          format: uuid
+          title: Daily Question Id
+          type: string
+        delivered_date:
+          format: date
+          title: Delivered Date
+          type: string
+        is_answered:
+          title: Is Answered
+          type: boolean
+        question:
+          $ref: '#/components/schemas/QuestionResponse'
+      required:
+      - daily_question_id
+      - delivered_date
+      - is_answered
+      - question
+      title: DailyQuestionResponse
+      type: object
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          title: Detail
+          type: array
+      title: HTTPValidationError
+      type: object
+    LearnerProfileDetail:
+      description: Fields from the LearnerProfile row (optional — may not exist yet).
+      properties:
+        best_streak:
+          default: 0
+          title: Best Streak
+          type: integer
+        current_streak:
+          default: 0
+          title: Current Streak
+          type: integer
+        difficulty_preference:
+          default: mixed
+          title: Difficulty Preference
+          type: string
+        notification_frequency:
+          default: daily
+          title: Notification Frequency
+          type: string
+        preferred_language:
+          default: en
+          title: Preferred Language
+          type: string
+        total_learning_minutes:
+          default: 0
+          title: Total Learning Minutes
+          type: integer
+      title: LearnerProfileDetail
+      type: object
+    LearnerProfilePatch:
+      description: Body for PATCH /learner/me — all fields optional (partial update).
+      properties:
+        difficulty_preference:
+          anyOf:
+          - enum:
+            - easy
+            - medium
+            - hard
+            - mixed
+            type: string
+          - type: 'null'
+          title: Difficulty Preference
+        email:
+          anyOf:
+          - format: email
+            type: string
+          - type: 'null'
+          title: Email
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+      title: LearnerProfilePatch
+      type: object
+    LearnerProfileResponse:
+      description: 'Full learner profile: core account + UserProfile + LearnerProfile.'
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        email:
+          title: Email
+          type: string
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+        learner_profile:
+          anyOf:
+          - $ref: '#/components/schemas/LearnerProfileDetail'
+          - type: 'null'
+        profile:
+          anyOf:
+          - $ref: '#/components/schemas/UserProfileDetail'
+          - type: 'null'
+        role:
+          title: Role
+          type: string
+      required:
+      - id
+      - email
+      - role
+      - is_active
+      - created_at
+      title: LearnerProfileResponse
+      type: object
+    LearnerProfileUpdate:
+      description: Body for PUT /learner/me — all fields required (upsert).
+      properties:
+        difficulty_preference:
+          default: mixed
+          enum:
+          - easy
+          - medium
+          - hard
+          - mixed
+          title: Difficulty Preference
+          type: string
+        email:
+          format: email
+          title: Email
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        last_name:
+          title: Last Name
+          type: string
+      required:
+      - first_name
+      - last_name
+      - email
+      title: LearnerProfileUpdate
+      type: object
+    PaginatedResponse_AdminSubAreaResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AdminSubAreaResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[AdminSubAreaResponse]
+      type: object
+    PaginatedResponse_QuestionResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/QuestionResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[QuestionResponse]
+      type: object
+    PaginatedResponse_RewardResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/RewardResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[RewardResponse]
+      type: object
+    PaginatedResponse_SubAreaResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/SubAreaResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[SubAreaResponse]
+      type: object
+    PaginatedResponse_SubjectResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/SubjectResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[SubjectResponse]
+      type: object
+    PaginatedResponse_TagResponse_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TagResponse'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[TagResponse]
+      type: object
+    QuestionContent:
+      properties:
+        alt_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alt Text
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        media_type:
+          default: text
+          title: Media Type
+          type: string
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      title: QuestionContent
+      type: object
+    QuestionCreate:
+      properties:
+        content:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionContent'
+          - type: 'null'
+        correct_answer_index:
+          minimum: 0.0
+          title: Correct Answer Index
+          type: integer
+        difficulty_level:
+          maximum: 5.0
+          minimum: 1.0
+          title: Difficulty Level
+          type: integer
+        explanation:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionExplanation'
+          - type: 'null'
+        options:
+          items:
+            $ref: '#/components/schemas/QuestionOption'
+          maxItems: 10
+          minItems: 2
+          title: Options
+          type: array
+        reward_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Reward Id
+        sub_area_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sub Area Id
+        subject_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subject Id
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+        title:
+          maxLength: 255
+          minLength: 1
+          title: Title
+          type: string
+      required:
+      - title
+      - options
+      - correct_answer_index
+      - difficulty_level
+      title: QuestionCreate
+      type: object
+    QuestionExplanation:
+      properties:
+        alt_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alt Text
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      title: QuestionExplanation
+      type: object
+    QuestionOption:
+      properties:
+        alt_text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Alt Text
+        image_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Image Url
+        index:
+          maximum: 10.0
+          minimum: 0.0
+          title: Index
+          type: integer
+        text:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Text
+      required:
+      - index
+      title: QuestionOption
+      type: object
+    QuestionResponse:
+      description: Full question, safe to send to clients (includes correct answer).
+      properties:
+        content:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionContent'
+          - type: 'null'
+        correct_answer_index:
+          title: Correct Answer Index
+          type: integer
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Creator Id
+        difficulty_level:
+          title: Difficulty Level
+          type: integer
+        explanation:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionExplanation'
+          - type: 'null'
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+        is_verified:
+          title: Is Verified
+          type: boolean
+        options:
+          items:
+            $ref: '#/components/schemas/QuestionOption'
+          title: Options
+          type: array
+        reward_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Reward Id
+        sub_area_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sub Area Id
+        subject_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subject Id
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+        title:
+          title: Title
+          type: string
+        updated_at:
+          format: date-time
+          title: Updated At
+          type: string
+      required:
+      - id
+      - title
+      - options
+      - correct_answer_index
+      - difficulty_level
+      - is_verified
+      - is_active
+      - created_at
+      - updated_at
+      title: QuestionResponse
+      type: object
+    QuestionStats:
+      description: Computed on demand from `attempts` and `question_reviews`.
+      properties:
+        accuracy:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Accuracy
+        average_rating:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Rating
+        average_time_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Average Time Seconds
+        correct_attempts:
+          default: 0
+          title: Correct Attempts
+          type: integer
+        total_attempts:
+          default: 0
+          title: Total Attempts
+          type: integer
+      title: QuestionStats
+      type: object
+    QuestionUpdate:
+      properties:
+        content:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionContent'
+          - type: 'null'
+        correct_answer_index:
+          anyOf:
+          - minimum: 0.0
+            type: integer
+          - type: 'null'
+          title: Correct Answer Index
+        difficulty_level:
+          anyOf:
+          - maximum: 5.0
+            minimum: 1.0
+            type: integer
+          - type: 'null'
+          title: Difficulty Level
+        explanation:
+          anyOf:
+          - $ref: '#/components/schemas/QuestionExplanation'
+          - type: 'null'
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+        is_verified:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Verified
+        options:
+          anyOf:
+          - items:
+              $ref: '#/components/schemas/QuestionOption'
+            maxItems: 10
+            minItems: 2
+            type: array
+          - type: 'null'
+          title: Options
+        reward_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Reward Id
+        sub_area_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sub Area Id
+        subject_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subject Id
+        tags:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+        title:
+          anyOf:
+          - maxLength: 255
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Title
+      title: QuestionUpdate
+      type: object
+    RefreshRequest:
+      properties:
+        refresh_token:
+          title: Refresh Token
+          type: string
+      required:
+      - refresh_token
+      title: RefreshRequest
+      type: object
+    RewardCreate:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        negative_marks:
+          default: 0
+          title: Negative Marks
+          type: integer
+        reward_amount:
+          minimum: 0.0
+          title: Reward Amount
+          type: integer
+        title:
+          maxLength: 255
+          minLength: 1
+          title: Title
+          type: string
+      required:
+      - title
+      - reward_amount
+      title: RewardCreate
+      type: object
+    RewardResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Creator Id
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          format: uuid
+          title: Id
+          type: string
+        negative_marks:
+          title: Negative Marks
+          type: integer
+        reward_amount:
+          title: Reward Amount
+          type: integer
+        title:
+          title: Title
+          type: string
+      required:
+      - id
+      - title
+      - reward_amount
+      - negative_marks
+      - created_at
+      title: RewardResponse
+      type: object
+    SubAreaCreate:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_order:
+          default: 0
+          title: Display Order
+          type: integer
+        is_active:
+          default: true
+          title: Is Active
+          type: boolean
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+        subject_id:
+          title: Subject Id
+          type: integer
+      required:
+      - name
+      - subject_id
+      title: SubAreaCreate
+      type: object
+    SubAreaResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Creator Id
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_order:
+          title: Display Order
+          type: integer
+        id:
+          title: Id
+          type: integer
+        is_active:
+          title: Is Active
+          type: boolean
+        name:
+          title: Name
+          type: string
+        subject_id:
+          title: Subject Id
+          type: integer
+      required:
+      - id
+      - name
+      - subject_id
+      - display_order
+      - is_active
+      - created_at
+      title: SubAreaResponse
+      type: object
+    SubAreaSubscriptionResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        end_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: End Date
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+        start_date:
+          format: date-time
+          title: Start Date
+          type: string
+        sub_area_id:
+          title: Sub Area Id
+          type: integer
+        user_id:
+          format: uuid
+          title: User Id
+          type: string
+      required:
+      - id
+      - user_id
+      - sub_area_id
+      - is_active
+      - start_date
+      - created_at
+      title: SubAreaSubscriptionResponse
+      type: object
+    SubjectCreate:
+      properties:
+        description:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Description
+        name:
+          maxLength: 100
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - name
+      title: SubjectCreate
+      type: object
+    SubjectResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Creator Id
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        name:
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      - created_at
+      title: SubjectResponse
+      type: object
+    SubjectSubscriptionResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        end_date:
+          anyOf:
+          - format: date-time
+            type: string
+          - type: 'null'
+          title: End Date
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_active:
+          title: Is Active
+          type: boolean
+        start_date:
+          format: date-time
+          title: Start Date
+          type: string
+        subject_id:
+          title: Subject Id
+          type: integer
+        user_id:
+          format: uuid
+          title: User Id
+          type: string
+      required:
+      - id
+      - user_id
+      - subject_id
+      - is_active
+      - start_date
+      - created_at
+      title: SubjectSubscriptionResponse
+      type: object
+    TagCreate:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        name:
+          maxLength: 50
+          minLength: 1
+          title: Name
+          type: string
+      required:
+      - name
+      title: TagCreate
+      type: object
+    TagResponse:
+      properties:
+        created_at:
+          format: date-time
+          title: Created At
+          type: string
+        creator_id:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          title: Creator Id
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        name:
+          title: Name
+          type: string
+        usage_count:
+          title: Usage Count
+          type: integer
+      required:
+      - id
+      - name
+      - usage_count
+      - created_at
+      title: TagResponse
+      type: object
+    TokenResponse:
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+        expires_in:
+          title: Expires In
+          type: integer
+        refresh_token:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Refresh Token
+        token_type:
+          default: bearer
+          title: Token Type
+          type: string
+      required:
+      - access_token
+      - expires_in
+      title: TokenResponse
+      type: object
+    UserCreate:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+        first_name:
+          title: First Name
+          type: string
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        password:
+          title: Password
+          type: string
+      required:
+      - first_name
+      - last_name
+      - email
+      - password
+      title: UserCreate
+      type: object
+    UserLogin:
+      properties:
+        email:
+          format: email
+          title: Email
+          type: string
+        password:
+          title: Password
+          type: string
+      required:
+      - email
+      - password
+      title: UserLogin
+      type: object
+    UserProfileDetail:
+      description: Fields from the UserProfile row (optional — may not exist yet).
+      properties:
+        avatar_url:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Avatar Url
+        bio:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Bio
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        institution:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Institution
+        is_public_profile:
+          default: false
+          title: Is Public Profile
+          type: boolean
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+        location:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Location
+        phone:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Phone
+        social_links:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Social Links
+      title: UserProfileDetail
+      type: object
+    UserUpdate:
+      properties:
+        first_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: First Name
+        last_name:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Last Name
+      required:
+      - first_name
+      - last_name
+      title: UserUpdate
+      type: object
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          title: Location
+          type: array
+        msg:
+          title: Message
+          type: string
+        type:
+          title: Error Type
+          type: string
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
+      type: object
+  securitySchemes:
+    OAuth2PasswordBearer:
+      flows:
+        password:
+          scopes: {}
+          tokenUrl: /auth/login
+      type: oauth2
+info:
+  contact:
+    name: DaVinci Team
+  description: Single-store PostgreSQL backend powering authentication, subjects, questions, and analytics.
+    Frontend clients (web + mobile) are generated from the OpenAPI spec — see docs/openapi.md for the
+    maintenance workflow.
+  license:
+    name: Proprietary
+  summary: QnA MCQ Learning Platform — REST API
+  title: DaVinci Backend API
+  version: 0.3.0
+openapi: 3.1.0
+paths:
+  /:
+    get:
+      operationId: read_root__get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+      summary: Read Root
+  /admin/daily-question:
+    post:
+      description: Picks a random active question and publishes it as today's global daily question. Can
+        be called multiple times to re-roll. Only admins may call this endpoint.
+      operationId: set_daily_question_admin_daily_question_post
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDailyQuestionResponse'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Set today's daily question (admin)
+      tags:
+      - Admin
+  /admin/dashboard/summary:
+    get:
+      operationId: getAdminSummary
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorSummaryResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Summary counts for the current creator/admin dashboard
+      tags:
+      - Admin
+  /admin/questions/:
+    get:
+      operationId: listCreatorQuestions
+      parameters:
+      - description: Case-insensitive title search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive title search
+          title: Search
+      - in: query
+        name: subject_id
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subject Id
+      - in: query
+        name: sub_area_id
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sub Area Id
+      - in: query
+        name: difficulty_level
+        required: false
+        schema:
+          anyOf:
+          - maximum: 5
+            minimum: 1
+            type: integer
+          - type: 'null'
+          title: Difficulty Level
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: is_verified
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Verified
+      - in: query
+        name: is_active
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_QuestionResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List the current user's questions (search + pagination)
+      tags:
+      - Admin
+    post:
+      operationId: createQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new question (creator/admin dashboard)
+      tags:
+      - Admin
+  /admin/rewards/:
+    get:
+      operationId: listAdminRewards
+      parameters:
+      - description: Case-insensitive title search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive title search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_RewardResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List the current user's rewards (search + pagination)
+      tags:
+      - Admin
+    post:
+      operationId: createReward
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RewardCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new reward (creator/admin dashboard)
+      tags:
+      - Admin
+  /admin/sub-areas/:
+    get:
+      operationId: listAdminSubAreas
+      parameters:
+      - description: Case-insensitive search on title or subject name
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive search on title or subject name
+          title: Search
+      - description: Filter by active status
+        in: query
+        name: is_active
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          description: Filter by active status
+          title: Is Active
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_AdminSubAreaResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List all sub-areas across subjects (search + pagination)
+      tags:
+      - Admin
+    post:
+      operationId: createSubArea
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubAreaCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubAreaResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new sub-area (creator/admin dashboard)
+      tags:
+      - Admin
+  /admin/sub-areas/by-subject/{subject_id}:
+    get:
+      operationId: getSubAreasBySubjectId
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubAreaResponse'
+                title: Response Getsubareasbysubjectid
+                type: array
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List all active sub-areas for a given subject
+      tags:
+      - Admin
+  /admin/subjects/:
+    get:
+      operationId: listAdminSubjects
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_SubjectResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List the current user's subjects (search + pagination)
+      tags:
+      - Admin
+    post:
+      operationId: createSubject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new subject (creator/admin dashboard)
+      tags:
+      - Admin
+  /admin/subjects/{subject_id}:
+    delete:
+      operationId: deleteSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Delete a subject by id
+      tags:
+      - Admin
+    get:
+      operationId: getSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get a subject by id
+      tags:
+      - Admin
+  /auth/activate:
+    post:
+      operationId: requestActivation
+      parameters:
+      - in: query
+        name: email
+        required: true
+        schema:
+          title: Email
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '404':
+          description: User not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Re-send the activation email for a user
+      tags:
+      - Authentication
+  /auth/get_user:
+    get:
+      operationId: getCurrentUser
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '401':
+          description: Not authenticated
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Return the currently authenticated user
+      tags:
+      - Authentication
+  /auth/login:
+    post:
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+          description: Successful Response
+        '400':
+          description: Invalid login data
+        '403':
+          description: User account is inactive
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Authenticate a user and issue access + refresh tokens
+      tags:
+      - Authentication
+  /auth/refresh:
+    post:
+      operationId: refresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+          description: Successful Response
+        '400':
+          description: Token is not a refresh token
+        '401':
+          description: Refresh token is invalid or expired
+        '404':
+          description: User no longer exists
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Exchange a valid refresh token for a new access token
+      tags:
+      - Authentication
+  /auth/register:
+    post:
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '409':
+          description: Email already registered
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Create a new (inactive) user account
+      tags:
+      - Authentication
+  /auth/update_user:
+    post:
+      operationId: updateCurrentUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '404':
+          description: User not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update the authenticated user's profile fields
+      tags:
+      - Authentication
+  /auth/verify-email:
+    get:
+      operationId: verifyEmail
+      parameters:
+      - in: query
+        name: token
+        required: true
+        schema:
+          title: Token
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '400':
+          description: Token invalid or user already active
+        '401':
+          description: Verification token expired
+        '404':
+          description: User not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Activate a user account from an email verification token
+      tags:
+      - Authentication
+  /creator/sub-areas/:
+    get:
+      operationId: listCreatorSubAreas
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Filter by parent subject
+        in: query
+        name: subject_id
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          description: Filter by parent subject
+          title: Subject Id
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubAreaResponse'
+                title: Response Listcreatorsubareas
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List sub-areas the creator is subscribed to
+      tags:
+      - Creator
+  /creator/sub-areas/{sub_area_id}/subscribe:
+    post:
+      operationId: creatorSubscribeToSubArea
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorSubAreaSubscriptionResponse'
+          description: Successful Response
+        '404':
+          description: Sub-area not found
+        '409':
+          description: Already subscribed
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Subscribe to a sub-area
+      tags:
+      - Creator
+  /creator/sub-areas/{sub_area_id}/unsubscribe:
+    post:
+      operationId: creatorUnsubscribeFromSubArea
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorSubAreaSubscriptionResponse'
+          description: Successful Response
+        '404':
+          description: Active subscription not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Unsubscribe from a sub-area
+      tags:
+      - Creator
+  /creator/subjects/:
+    get:
+      operationId: listCreatorSubjects
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubjectResponse'
+                title: Response Listcreatorsubjects
+                type: array
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List subjects the creator is subscribed to (search supported)
+      tags:
+      - Creator
+  /creator/subjects/{subject_id}/subscribe:
+    post:
+      operationId: creatorSubscribeToSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorSubjectSubscriptionResponse'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '409':
+          description: Already subscribed
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Subscribe to a subject
+      tags:
+      - Creator
+  /creator/subjects/{subject_id}/unsubscribe:
+    post:
+      operationId: creatorUnsubscribeFromSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorSubjectSubscriptionResponse'
+          description: Successful Response
+        '404':
+          description: Active subscription not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Unsubscribe from a subject
+      tags:
+      - Creator
+  /creator/tags/:
+    get:
+      operationId: listCreatorTags
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_TagResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List the current user's tags (search + pagination)
+      tags:
+      - Creator
+    post:
+      operationId: createTag
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '409':
+          description: Tag with this name already exists
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new tag (creator/admin dashboard)
+      tags:
+      - Creator
+  /creator/tags/all/:
+    get:
+      operationId: listAllTags
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_TagResponse_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List all tags with optional search
+      tags:
+      - Creator
+  /learner/attempts:
+    post:
+      description: Submit the learner's answer for a question. Returns whether the answer was correct,
+        the score awarded/deducted, and the full explanation.
+      operationId: create_attempt_learner_attempts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttemptSubmit'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttemptResult'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Submit an attempt
+      tags:
+      - Learner
+  /learner/daily-question:
+    get:
+      description: Returns the question published by an admin for today. The `is_answered` flag indicates
+        whether the current user has already submitted an attempt.
+      operationId: read_daily_question_learner_daily_question_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyQuestionResponse'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get today's daily question
+      tags:
+      - Learner
+  /learner/me:
+    get:
+      description: 'Returns the authenticated learner''s full profile: core account details, UserProfile,
+        and LearnerProfile settings.'
+      operationId: read_my_profile_learner_me_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerProfileResponse'
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get my profile
+      tags:
+      - Learner
+    patch:
+      description: 'Updates only the provided fields. Omit any field to leave it unchanged. Fields: ``first_name``,
+        ``last_name``, ``email``, ``difficulty_preference``.'
+      operationId: update_my_profile_learner_me_patch
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearnerProfilePatch'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerProfileResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Partially update my profile
+      tags:
+      - Learner
+    put:
+      description: 'Sets all editable profile fields at once. Creates ``UserProfile`` and ``LearnerProfile``
+        rows if they do not exist yet. Fields: ``first_name``, ``last_name``, ``email``, ``difficulty_preference``.'
+      operationId: create_my_profile_learner_me_put
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LearnerProfileUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerProfileResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create / replace my profile
+      tags:
+      - Learner
+  /learner/subscriptions/sub-areas:
+    get:
+      operationId: list_my_sub_areas_learner_subscriptions_sub_areas_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubAreaSubscriptionResponse'
+                title: Response List My Sub Areas Learner Subscriptions Sub Areas Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List my sub-area subscriptions
+      tags:
+      - Learner
+  /learner/subscriptions/sub-areas/{sub_area_id}:
+    delete:
+      operationId: unsubscribe_from_sub_area_learner_subscriptions_sub_areas__sub_area_id__delete
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Unsubscribe from a sub-area
+      tags:
+      - Learner
+    post:
+      operationId: subscribe_to_sub_area_learner_subscriptions_sub_areas__sub_area_id__post
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubAreaSubscriptionResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Subscribe to a sub-area
+      tags:
+      - Learner
+  /learner/subscriptions/subjects:
+    get:
+      operationId: list_my_subjects_learner_subscriptions_subjects_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubjectSubscriptionResponse'
+                title: Response List My Subjects Learner Subscriptions Subjects Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List my subject subscriptions
+      tags:
+      - Learner
+  /learner/subscriptions/subjects/{subject_id}:
+    delete:
+      operationId: unsubscribe_from_subject_learner_subscriptions_subjects__subject_id__delete
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Unsubscribe from a subject
+      tags:
+      - Learner
+    post:
+      operationId: subscribe_to_subject_learner_subscriptions_subjects__subject_id__post
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectSubscriptionResponse'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Subscribe to a subject
+      tags:
+      - Learner
+  /questions/{question_id}:
+    delete:
+      operationId: deleteQuestion
+      parameters:
+      - in: path
+        name: question_id
+        required: true
+        schema:
+          format: uuid
+          title: Question Id
+          type: string
+      - description: Permanently delete instead of soft-deactivate (admin only)
+        in: query
+        name: hard
+        required: false
+        schema:
+          default: false
+          description: Permanently delete instead of soft-deactivate (admin only)
+          title: Hard
+          type: boolean
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: {}
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Only owner/admin; hard delete is admin-only
+        '404':
+          description: Question not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Soft-deactivate or hard-delete a question
+      tags:
+      - Questions
+    get:
+      operationId: getQuestion
+      parameters:
+      - in: path
+        name: question_id
+        required: true
+        schema:
+          format: uuid
+          title: Question Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionResponse'
+          description: Successful Response
+        '404':
+          description: Question not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get a single question by id
+      tags:
+      - Questions
+    put:
+      operationId: updateQuestion
+      parameters:
+      - in: path
+        name: question_id
+        required: true
+        schema:
+          format: uuid
+          title: Question Id
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Only owner or admin
+        '404':
+          description: Question not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Update a question (owner or admin)
+      tags:
+      - Questions
+  /questions/{question_id}/stats:
+    get:
+      operationId: getQuestionStats
+      parameters:
+      - in: path
+        name: question_id
+        required: true
+        schema:
+          format: uuid
+          title: Question Id
+          type: string
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionStats'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '404':
+          description: Question not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Aggregated stats (attempts/accuracy/rating) for a question
+      tags:
+      - Questions
+  /v0/rewards/:
+    get:
+      operationId: listRewards
+      parameters:
+      - description: Case-insensitive title search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive title search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_RewardResponse_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List all rewards with optional search
+      tags:
+      - Catalog
+  /v0/subjects/:
+    get:
+      operationId: listSubjects
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_SubjectResponse_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List all subjects with optional search
+      tags:
+      - Catalog
+  /v0/subjects/{subject_id}/sub-areas:
+    get:
+      operationId: listSubjectSubAreas
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_SubAreaResponse_'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: List sub-areas for a subject with optional search
+      tags:
+      - Catalog
+servers:
+- description: Local dev
+  url: http://localhost:8000
+- description: Staging
+  url: https://api.staging.example.com
+- description: Production
+  url: https://api.example.com
+tags:
+- description: Register, login, refresh, email verification, profile.
+  name: Authentication
+- description: 'Admin-only operations: dashboard, daily question, subject management.'
+  name: Admin
+- description: 'Creator dashboard: create and manage questions, tags, subjects.'
+  name: Creator
+- description: Read, update, and review a question.
+  name: Questions
+- description: 'Learner-facing: daily question, attempt submission, and profile.'
+  name: Learner
+- description: Public /v0 lists for subjects, sub-areas, tags, and rewards.
+  name: Catalog

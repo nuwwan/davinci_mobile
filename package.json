@@ -10,7 +10,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "gen:api": "rtk-query-codegen-openapi openapi-codegen.json"
+    "gen:api": "rtk-query-codegen-openapi openapi-codegen.json && node -e \"const fs=require('fs');const f='./src/api/generated.ts';fs.writeFileSync(f,fs.readFileSync(f,'utf8').replaceAll('overrideExisting: false','overrideExisting: true'));\""
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

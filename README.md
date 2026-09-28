@@ -51,7 +51,7 @@ rest on both iOS and Android.
 ## Regenerating the API client
 
 `src/api/generated.ts` is produced from
-`../davinci_backend/docs/openapi.json` and **must not be hand-edited**.
+`../davinci_backend/docs/openapi.yaml` and **must not be hand-edited**.
 After the backend's spec changes:
 
 ```bash

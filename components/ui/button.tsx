@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, type ViewStyle } from 'react-native';
 
 import { AppText } from '@/components/ui/text';
+import { cn } from '@/lib/cn';
 import { useTheme } from '@/src/theme';
 
 export type ButtonVariant = 'primary' | 'outline' | 'ghost';
@@ -16,7 +17,14 @@ export type ButtonProps = {
   fullWidth?: boolean;
   /** Default 52 per auth / daily spec */
   height?: number;
+  className?: string;
   style?: ViewStyle;
+};
+
+const VARIANT_CLASS: Record<ButtonVariant, string> = {
+  primary: 'bg-primary active:bg-primary-hover active:scale-[0.98]',
+  outline: 'border-[1.5px] border-primary bg-transparent active:bg-primary-light',
+  ghost: 'bg-transparent active:bg-primary-light',
 };
 
 export function Button({
@@ -28,37 +36,11 @@ export function Button({
   leftIcon,
   fullWidth = true,
   height = 52,
+  className,
   style,
 }: ButtonProps) {
-  const { theme } = useTheme();
+  const { colors } = useTheme();
   const isDisabled = disabled || loading;
-  const opacity = isDisabled ? 0.4 : 1;
-
-  const containerBase: ViewStyle[] = [
-    styles.base,
-    { minHeight: height, borderRadius: theme.radius.lg, opacity },
-    ...(fullWidth ? [styles.fullWidth] : []),
-  ];
-
-  const palette = (pressed: boolean) => {
-    if (variant === 'primary') {
-      return {
-        bg: pressed ? theme.colors.primaryHover : theme.colors.primary,
-        borderColor: theme.colors.primary,
-      };
-    }
-    if (variant === 'outline') {
-      return {
-        bg: pressed ? theme.colors.primaryLight : 'transparent',
-        borderColor: theme.colors.primary,
-      };
-    }
-    return {
-      bg: pressed ? theme.colors.primaryLight : 'transparent',
-      borderColor: 'transparent',
-    };
-  };
-
   const labelColor = variant === 'primary' ? 'textInverse' : 'primary';
 
   return (
@@ -66,25 +48,20 @@ export function Button({
       accessibilityRole="button"
       disabled={isDisabled}
       onPress={onPress}
-      style={({ pressed }) => [
-        ...containerBase,
-        {
-          backgroundColor: palette(pressed).bg,
-          borderWidth: variant === 'outline' ? 1.5 : 0,
-          borderColor: palette(pressed).borderColor,
-        },
-        variant === 'primary' && pressed && !isDisabled && { transform: [{ scale: 0.97 }] },
-        style,
-      ]}>
+      style={[{ minHeight: height }, style]}
+      className={cn(
+        'flex-row items-center justify-center rounded-lg px-5',
+        VARIANT_CLASS[variant],
+        fullWidth && 'self-stretch',
+        isDisabled && 'opacity-40',
+        className
+      )}>
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? theme.colors.textInverse : theme.colors.primary} />
+        <ActivityIndicator color={variant === 'primary' ? colors.textInverse : colors.primary} />
       ) : (
         <>
           {leftIcon}
-          <AppText
-            variant="body"
-            color={labelColor}
-            style={leftIcon ? { marginLeft: theme.spacing.xs } : undefined}>
+          <AppText variant="body" color={labelColor} className={leftIcon ? 'ml-2' : undefined}>
             {title}
           </AppText>
         </>
@@ -92,15 +69,3 @@ export function Button({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  fullWidth: {
-    alignSelf: 'stretch',
-  },
-});
