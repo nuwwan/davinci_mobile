@@ -1,3 +1,3 @@
-export { Screen, ScreenBody } from './screen';
-export { Header } from './header';
-export { KeyboardAvoidingScreen, KeyboardAwareScrollView } from './keyboard-aware';
+export { Screen, ScrollScreen, ScreenBody, type ScreenProps, type ScrollScreenProps } from './screen';
+export { PageHeader, NavHeader, BrandHeader } from './header';
+export { KeyboardAwareScrollView } from './keyboard-aware';

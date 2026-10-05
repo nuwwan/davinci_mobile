@@ -333,6 +333,19 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Learner"],
       }),
+      getAttemptHistoryLearnerAttemptsHistoryGet: build.query<
+        GetAttemptHistoryLearnerAttemptsHistoryGetApiResponse,
+        GetAttemptHistoryLearnerAttemptsHistoryGetApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/attempts/history`,
+          params: {
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Learner"],
+      }),
       readDailyQuestionLearnerDailyQuestionGet: build.query<
         ReadDailyQuestionLearnerDailyQuestionGetApiResponse,
         ReadDailyQuestionLearnerDailyQuestionGetApiArg
@@ -690,6 +703,14 @@ export type CreateAttemptLearnerAttemptsPostApiResponse =
 export type CreateAttemptLearnerAttemptsPostApiArg = {
   attemptSubmit: AttemptSubmit;
 };
+export type GetAttemptHistoryLearnerAttemptsHistoryGetApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseAttemptHistoryItem;
+export type GetAttemptHistoryLearnerAttemptsHistoryGetApiArg = {
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+};
 export type ReadDailyQuestionLearnerDailyQuestionGetApiResponse =
   /** status 200 Successful Response */ DailyQuestionResponse;
 export type ReadDailyQuestionLearnerDailyQuestionGetApiArg = void;
@@ -1001,6 +1022,23 @@ export type AttemptSubmit = {
   /** 0-based index of the chosen option */
   selected_option_index: number;
 };
+export type AttemptHistoryItem = {
+  attempt_id: string;
+  attempted_at: any;
+  correct_answer_index: number;
+  is_correct: boolean;
+  question_id: string;
+  question_title: string;
+  score?: number | null;
+  selected_option_index: number;
+  time_taken_seconds?: number | null;
+};
+export type PaginatedResponseAttemptHistoryItem = {
+  items: AttemptHistoryItem[];
+  page: number;
+  page_size: number;
+  total: number;
+};
 export type DailyQuestionResponse = {
   daily_question_id: string;
   delivered_date: string;
@@ -1138,6 +1176,8 @@ export const {
   useListAllTagsQuery,
   useLazyListAllTagsQuery,
   useCreateAttemptLearnerAttemptsPostMutation,
+  useGetAttemptHistoryLearnerAttemptsHistoryGetQuery,
+  useLazyGetAttemptHistoryLearnerAttemptsHistoryGetQuery,
   useReadDailyQuestionLearnerDailyQuestionGetQuery,
   useLazyReadDailyQuestionLearnerDailyQuestionGetQuery,
   useReadMyProfileLearnerMeGetQuery,

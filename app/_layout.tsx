@@ -61,11 +61,11 @@ export default function RootLayout() {
       {/* Redirect to login / tabs based on auth state */}
       <AuthGate />
       <ThemedChrome />
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right' }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', headerShown: true, title: 'Modal' }} />
+        <Stack.Screen name="settings" />
       </Stack>
     </AppProviders>
   );

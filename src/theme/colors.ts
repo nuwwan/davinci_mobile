@@ -1,90 +1,94 @@
 /**
- * Single source of truth for color hex values in the mobile app.
+ * DaVinci color tokens — single source of truth for hex values.
  *
- * This file mirrors `davinci_web/src/theme/tokens.css` and `global.css` (emerald +
- * slate + gold). It is the source for IMPERATIVE colors only (icons, spinners,
- * navigation theme) consumed via `useTheme().colors`.
+ * Source: Figma "DaVinci Mobile" → variable collection "DaVinci Colors" (light) and the
+ * "(Dark)" frames (dark). Brand seeds: #007A8C (teal), #336749 (green), #6C757D (slate).
  *
- * For styling, use Tailwind/NativeWind classes (bg-primary, text-t-secondary, …),
- * whose values come from the CSS variables in global.css. Keep both in sync.
+ * Styling should use NativeWind classes (bg-primary, text-t-secondary, border-border …),
+ * whose values come from the CSS variables in global.css. This file feeds IMPERATIVE
+ * colors only (icons, spinners, switches, navigation theme) via `useTheme().colors`.
+ * Keep global.css in sync with this file.
  */
 
 export const lightColors = {
-  /* Brand — emerald (growth) */
-  primary: '#059669',          // emerald-600
-  primaryHover: '#047857',     // emerald-700
-  primaryLight: '#ECFDF5',     // emerald-50
-  primaryMuted: '#A7F3D0',     // emerald-200
+  /* Brand */
+  primary: '#007A8C',
+  primaryHover: '#00616F',
+  primaryLight: '#E0F2F4',
+  primaryMuted: '#8CC7CF',
 
-  /* Secondary / accent — gold (premium highlights) */
-  secondary: '#D97706',        // amber-600
-  secondaryLight: '#FFFBEB',   // amber-50
+  /* Accent — streaks, "Medium" difficulty, highlights */
+  accent: '#9A6408',
+  accentLight: '#FBF0DA',
 
-  /* Surfaces — cool slate (ink) */
-  surface: '#FFFFFF',
-  surface2: '#F1F5F9',         // slate-100
-  surface3: '#F8FAFC',         // slate-50
+  /* Surfaces */
+  surface: '#FFFFFF', // cards, sheets, inputs, tab bar
+  surface2: '#EEF1F3', // chips, badge/track backgrounds, dividers
+  surface3: '#F6F8F9', // screen background
 
   /* Borders */
-  border: '#E2E8F0',           // slate-200
-  borderStrong: '#CBD5E1',     // slate-300
+  border: '#DEE2E6',
+  borderStrong: '#C5CCD2',
 
   /* Text */
-  textPrimary: '#0F172A',      // slate-900
-  textSecondary: '#475569',    // slate-600
-  textTertiary: '#94A3B8',     // slate-400
+  textPrimary: '#1B2A30',
+  textSecondary: '#6C757D',
+  textTertiary: '#98A1A8',
   textInverse: '#FFFFFF',
 
   /* Feedback */
-  correct: '#059669',
-  correctBg: '#ECFDF5',
-  correctBorder: '#A7F3D0',
-  wrong: '#E11D48',            // rose-600
-  wrongBg: '#FFF1F2',          // rose-50
-  wrongBorder: '#FECDD3',      // rose-200
+  success: '#336749',
+  successBg: '#E8F3EC',
+  successBorder: '#A9CDB8',
+  error: '#C0392B',
+  errorBg: '#FCECEA',
+  errorBorder: '#F0B7B0',
 
-  streak: '#D97706',           // amber-600
-  streakBg: '#FFFBEB',         // amber-50
-
-  /** Modal / bottom-sheet scrim (opacity applied in component). */
-  scrim: '#0F172A',
-} as const;
-
-export const darkColors = {
-  primary: '#34D399',
-  primaryHover: '#6EE7B7',
-  primaryLight: '#022C22',
-  primaryMuted: '#065F46',
-
-  secondary: '#FBBF24',
-  secondaryLight: '#1C1500',
-
-  surface: '#0F172A',
-  surface2: '#1E293B',
-  surface3: '#020617',
-
-  border: '#1E293B',
-  borderStrong: '#334155',
-
-  textPrimary: '#F1F5F9',
-  textSecondary: '#CBD5E1',
-  textTertiary: '#64748B',
-  textInverse: '#0F172A',
-
-  correct: '#34D399',
-  correctBg: '#022C22',
-  correctBorder: '#065F46',
-  wrong: '#FB7185',
-  wrongBg: '#2D0A0A',
-  wrongBorder: '#7F1D1D',
-
-  streak: '#FBBF24',
-  streakBg: '#1C1500',
-
-  scrim: '#0F172A',
+  /** Sheet / modal backdrop (opacity applied separately — see `scrimOpacity`). */
+  scrim: '#000000',
 } as const;
 
 export type ColorName = keyof typeof lightColors;
 
-/** Resolved color map for one scheme (used for imperative colors: icons, spinners, nav theme). */
+/** Resolved color map for one scheme. */
 export type ThemeColors = Record<ColorName, string>;
+
+export const darkColors: ThemeColors = {
+  primary: '#3FB8CB',
+  primaryHover: '#2DA0B3',
+  primaryLight: '#10353B',
+  primaryMuted: '#1F6F7C',
+
+  accent: '#E0A23B',
+  accentLight: '#3A2C10',
+
+  surface: '#172429',
+  surface2: '#22333A',
+  surface3: '#0F1A1D',
+
+  border: '#2C3F47',
+  borderStrong: '#3D535C',
+
+  textPrimary: '#E8F0F2',
+  textSecondary: '#9FB0B7',
+  textTertiary: '#6F838B',
+  textInverse: '#06222A',
+
+  success: '#5BB98A',
+  successBg: '#14301F',
+  successBorder: '#2A5A40',
+  error: '#E5675A',
+  errorBg: '#3A1C19',
+  errorBorder: '#6B2E29',
+
+  scrim: '#000000',
+};
+
+/** Backdrop opacity for sheets/modals per scheme (Figma: 45% light, 60% dark). */
+export const scrimOpacity = { light: 0.45, dark: 0.6 } as const;
+
+/** Card elevation per scheme (Figma: 0 1 3 rgba(0,0,0,.08) light / .30 dark). */
+export const cardShadow = {
+  light: '0px 1px 3px rgba(0, 0, 0, 0.08)',
+  dark: '0px 1px 3px rgba(0, 0, 0, 0.30)',
+} as const;

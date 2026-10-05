@@ -13,7 +13,7 @@ export function buildNavigationTheme(colors: ThemeColors, isDark: boolean): NavT
       card: colors.surface,
       text: colors.textPrimary,
       border: colors.border,
-      notification: colors.secondary,
+      notification: colors.error,
     },
     fonts: {
       regular: { fontFamily: fontFamilies.regular, fontWeight: '400' },

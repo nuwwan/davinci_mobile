@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Modal, Pressable, View } from 'react-native';
 
+import { useTheme } from '@/src/theme';
+
 export type AppModalProps = {
   visible: boolean;
   onRequestClose: () => void;
@@ -9,23 +11,19 @@ export type AppModalProps = {
   dismissOnBackdrop?: boolean;
 };
 
-export function AppModal({
-  visible,
-  onRequestClose,
-  children,
-  dismissOnBackdrop = true,
-}: AppModalProps) {
+/** Centered dialog. Prefer `BottomSheet` / `ConfirmSheet` for confirmations on mobile. */
+export function AppModal({ visible, onRequestClose, children, dismissOnBackdrop = true }: AppModalProps) {
+  const { scrimOpacity } = useTheme();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onRequestClose}>
       <View className="flex-1 justify-center px-6">
         <Pressable
-          className="absolute inset-0 z-[1] bg-scrim/[0.45]"
+          className="absolute inset-0 bg-scrim"
+          style={{ opacity: scrimOpacity }}
           onPress={dismissOnBackdrop ? onRequestClose : undefined}
           accessibilityElementsHidden
         />
-        <View className="z-[2] w-full max-w-[520px] self-center rounded-2xl bg-surface p-6 shadow-lg">
-          {children}
-        </View>
+        <View className="w-full max-w-[520px] self-center rounded-xl bg-surface p-6">{children}</View>
       </View>
     </Modal>
   );

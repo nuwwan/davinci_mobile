@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 
 import { buildNavigationTheme } from './build-theme';
-import { darkColors, lightColors, type ThemeColors } from './colors';
+import { cardShadow, darkColors, lightColors, scrimOpacity, type ThemeColors } from './colors';
 
 const THEME_PREFERENCE_KEY = 'theme_preference';
 
@@ -26,6 +26,10 @@ type ThemeContextValue = {
   /** Flip between light and dark and persist the choice. */
   toggleTheme: () => Promise<void>;
   navigationTheme: ReturnType<typeof buildNavigationTheme>;
+  /** Card elevation as a CSS box-shadow string (RN new-architecture `boxShadow`). */
+  shadow: string;
+  /** Backdrop opacity for sheets / modals. */
+  scrimOpacity: number;
 };
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -60,7 +64,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const setPreference = useCallback(async (value: ThemePreference) => {
     setPreferenceState(value);
     nwColorScheme.set(value);
-    await SecureStore.setItemAsync(THEME_PREFERENCE_KEY, value);
+    try {
+      await SecureStore.setItemAsync(THEME_PREFERENCE_KEY, value);
+    } catch {
+      /* SecureStore unavailable (e.g. web) — preference applies for this session only */
+    }
   }, []);
 
   const toggleTheme = useCallback(
@@ -69,7 +77,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 
   const value = useMemo<ThemeContextValue>(
-    () => ({ colors, isDark, preference, setPreference, toggleTheme, navigationTheme }),
+    () => ({
+      colors,
+      isDark,
+      preference,
+      setPreference,
+      toggleTheme,
+      navigationTheme,
+      shadow: isDark ? cardShadow.dark : cardShadow.light,
+      scrimOpacity: isDark ? scrimOpacity.dark : scrimOpacity.light,
+    }),
     [colors, isDark, preference, setPreference, toggleTheme, navigationTheme]
   );
 

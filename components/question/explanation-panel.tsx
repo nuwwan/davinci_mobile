@@ -1,56 +1,40 @@
-import type { ReactNode } from 'react';
-import { View, type ViewProps } from 'react-native';
+import { Image } from 'expo-image';
+import { View } from 'react-native';
 
 import { AppText } from '@/components/ui/text';
-import { cn } from '@/lib/cn';
+import { Card } from '@/components/ui/card';
 
-export type ExplanationPanelProps = ViewProps & {
-  title?: string;
-  /** Controls the colour theme of the panel. Defaults to 'neutral'. */
-  tone?: 'correct' | 'neutral';
-  children: ReactNode;
-  className?: string;
-};
-
-const TONE_STYLES = {
-  correct: {
-    container: 'border-correct-border bg-correct-bg',
-    heading: 'correct' as const,
-    body: 'correct' as const,
-  },
-  neutral: {
-    container: 'border-border bg-surface-2',
-    heading: 'textSecondary' as const,
-    body: 'textPrimary' as const,
-  },
-};
-
+/**
+ * Answer explanation. `success` tone (green, Figma E4) when the learner got it right /
+ * already answered; `neutral` card (Figma E3) after a wrong answer.
+ */
 export function ExplanationPanel({
-  title = 'Explanation',
+  text,
+  imageUrl,
   tone = 'neutral',
-  children,
-  className,
-  ...rest
-}: ExplanationPanelProps) {
-  const styles = TONE_STYLES[tone];
-
-  const body =
-    typeof children === 'string' || typeof children === 'number' ? (
-      <AppText variant="body" color={styles.body}>
-        {String(children)}
-      </AppText>
-    ) : (
-      <View className="mt-1">{children}</View>
-    );
-
+  title = 'Explanation',
+}: {
+  text?: string | null;
+  imageUrl?: string | null;
+  tone?: 'success' | 'neutral';
+  title?: string;
+}) {
+  if (!text && !imageUrl) return null;
   return (
-    <View
-      className={cn('w-full rounded-lg border p-4', styles.container, className)}
-      {...rest}>
-      <AppText variant="cardHeading" color={styles.heading} className="mb-2">
+    <Card tone={tone === 'success' ? 'success' : 'default'} elevated>
+      <AppText variant="cardTitle" color={tone === 'success' ? 'success' : 'textPrimary'}>
         {title}
       </AppText>
-      {body}
-    </View>
+      {text ? (
+        <AppText variant="body" className="mt-1.5">
+          {text}
+        </AppText>
+      ) : null}
+      {imageUrl ? (
+        <View className="mt-3 overflow-hidden rounded-md bg-surface-2">
+          <Image source={{ uri: imageUrl }} style={{ width: '100%', height: 200 }} contentFit="contain" transition={200} />
+        </View>
+      ) : null}
+    </Card>
   );
 }

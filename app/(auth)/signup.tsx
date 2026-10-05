@@ -1,53 +1,25 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  View,
-} from 'react-native';
+import { View } from 'react-native';
 
-import { AppText } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/toast-context';
+import { BrandHeader, KeyboardAwareScrollView } from '@/components/layout';
+import { AppText, Button, Card, Input, TextLink, useToast } from '@/components/ui';
 import { useRegisterMutation } from '@/src/api/enhanced';
+import { validateEmail, validateNewPassword } from '@/lib/validation';
 
-type FormErrors = {
-  firstName?: string;
-  email?: string;
-  password?: string;
-  confirmPassword?: string;
-};
+type Errors = { firstName?: string; email?: string; password?: string; confirm?: string };
 
-function validate(
-  firstName: string,
-  email: string,
-  password: string,
-  confirmPassword: string,
-): FormErrors {
-  const errs: FormErrors = {};
-  if (!firstName.trim()) errs.firstName = 'First name is required';
-  if (!email.trim()) {
-    errs.email = 'Email is required';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    errs.email = 'Enter a valid email address';
-  }
-  if (!password) {
-    errs.password = 'Password is required';
-  } else if (password.length < 8) {
-    errs.password = 'Password must be at least 8 characters';
-  }
-  if (!confirmPassword) {
-    errs.confirmPassword = 'Please confirm your password';
-  } else if (password !== confirmPassword) {
-    errs.confirmPassword = 'Passwords do not match';
-  }
-  return errs;
+function validate(firstName: string, email: string, password: string, confirm: string): Errors {
+  const e: Errors = {};
+  if (!firstName.trim()) e.firstName = 'First name is required';
+  e.email = validateEmail(email);
+  e.password = validateNewPassword(password);
+  if (!confirm) e.confirm = 'Please confirm your password';
+  else if (password !== confirm) e.confirm = 'Passwords do not match';
+  return e;
 }
 
+/** Sign up (Figma B / B2). */
 export default function SignUpScreen() {
   const router = useRouter();
   const { showToast } = useToast();
@@ -57,17 +29,16 @@ export default function SignUpScreen() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [confirm, setConfirm] = useState('');
+  const [errors, setErrors] = useState<Errors>({});
 
   async function handleSignUp() {
-    const errs = validate(firstName, email, password, confirmPassword);
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+    const next = validate(firstName, email, password, confirm);
+    if (Object.values(next).some(Boolean)) {
+      setErrors(next);
       return;
     }
     setErrors({});
-
     try {
       await register({
         userCreate: {
@@ -77,130 +48,94 @@ export default function SignUpScreen() {
           password,
         },
       }).unwrap();
-
-      showToast(
-        'Account created! Check your email to verify your account before signing in.',
-        'success',
-      );
+      showToast('Account created! Check your email to verify your account before signing in.', 'success', 4500);
       router.replace('/(auth)/login');
     } catch (err: any) {
-      const status = err?.status;
-      if (status === 409) {
-        setErrors({ email: 'This email is already registered' });
-      } else {
-        showToast('Registration failed. Please try again.', 'error');
-      }
+      if (err?.status === 409) setErrors({ email: 'This email is already registered' });
+      else showToast('Registration failed. Please try again.', 'error');
     }
   }
 
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-surface-3"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView
-          contentContainerClassName="flex-grow justify-center px-6 py-12"
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+    <KeyboardAwareScrollView contentContainerClassName="px-4 pb-8 pt-12">
+      <BrandHeader tagline="Create your account" />
 
-          {/* ── Branding ── */}
-          <View className="mb-10 items-center gap-2">
-            <AppText variant="screenTitle" color="primary">
-              DaVinci
-            </AppText>
-            <AppText variant="body" color="textSecondary" center>
-              Create your account
-            </AppText>
-          </View>
+      <Card variant="hero" className="mt-6 gap-4 px-6 py-6">
+        <AppText variant="section" accessibilityRole="header">
+          Sign up
+        </AppText>
 
-          {/* ── Form card ── */}
-          <View className="rounded-2xl border border-border bg-surface p-6 shadow-md gap-4">
-            <AppText variant="sectionHeading" color="textPrimary">
-              Sign up
-            </AppText>
-
-            {/* Name row */}
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <Input
-                  label="First name"
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  autoCapitalize="words"
-                  autoComplete="given-name"
-                  placeholder="Nuwan"
-                  error={errors.firstName}
-                />
-              </View>
-              <View className="flex-1">
-                <Input
-                  label="Last name"
-                  value={lastName}
-                  onChangeText={setLastName}
-                  autoCapitalize="words"
-                  autoComplete="family-name"
-                  placeholder="Silva"
-                />
-              </View>
-            </View>
-
+        <View className="flex-row gap-3">
+          <View className="flex-1">
             <Input
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="email"
-              placeholder="you@example.com"
-              error={errors.email}
-            />
-
-            <Input
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="new-password"
-              placeholder="Min. 8 characters"
-              error={errors.password}
-            />
-
-            <Input
-              label="Confirm password"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="new-password"
-              placeholder="Repeat your password"
-              error={errors.confirmPassword}
-            />
-
-            <Button
-              title="Create account"
-              loading={isLoading}
-              onPress={handleSignUp}
-              fullWidth
+              label="First name"
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="e.g. Nuwan"
+              autoCapitalize="words"
+              autoComplete="given-name"
+              editable={!isLoading}
+              error={errors.firstName}
             />
           </View>
-
-          {/* ── Footer ── */}
-          <View className="mt-6 flex-row items-center justify-center gap-1">
-            <AppText variant="body" color="textSecondary">
-              Already have an account?
-            </AppText>
-            <AppText
-              variant="body"
-              color="primary"
-              onPress={() => router.push('/(auth)/login')}>
-              Sign in
-            </AppText>
+          <View className="flex-1">
+            <Input
+              label="Last name"
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="e.g. Silva"
+              autoCapitalize="words"
+              autoComplete="family-name"
+              editable={!isLoading}
+            />
           </View>
+        </View>
 
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+        <Input
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          editable={!isLoading}
+          error={errors.email}
+        />
+        <Input
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Min. 8 characters"
+          secureTextEntry
+          autoCapitalize="none"
+          autoComplete="new-password"
+          textContentType="newPassword"
+          editable={!isLoading}
+          error={errors.password}
+        />
+        <Input
+          label="Confirm password"
+          value={confirm}
+          onChangeText={setConfirm}
+          placeholder="Repeat your password"
+          secureTextEntry
+          autoCapitalize="none"
+          autoComplete="new-password"
+          returnKeyType="go"
+          onSubmitEditing={handleSignUp}
+          editable={!isLoading}
+          error={errors.confirm}
+        />
+
+        <Button title="Create account" onPress={handleSignUp} loading={isLoading} className="mt-2" />
+      </Card>
+
+      <View className="mt-6 flex-row items-center justify-center gap-1">
+        <AppText color="textSecondary">Already have an account?</AppText>
+        <TextLink title="Sign in" onPress={() => router.replace('/(auth)/login')} />
+      </View>
+    </KeyboardAwareScrollView>
   );
 }

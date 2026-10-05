@@ -1,61 +1,50 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-  Keyboard,
-  View,
-} from 'react-native';
+import { View } from 'react-native';
 
-import { AppText } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/toast-context';
-import { useAppDispatch } from '@/src/store/hooks';
-import { useLoginMutation } from '@/src/api/enhanced';
+import { BrandHeader, KeyboardAwareScrollView } from '@/components/layout';
+import { AppText, Button, Card, Input, TextLink, useToast } from '@/components/ui';
+import { useLoginMutation, useRequestActivationMutation } from '@/src/api/enhanced';
 import { tokensReceived } from '@/src/features/auth/authSlice';
+import { useAppDispatch } from '@/src/store/hooks';
+import { validateEmail } from '@/lib/validation';
 
-function validate(email: string, password: string) {
-  const errors: { email?: string; password?: string } = {};
-  if (!email.trim()) {
-    errors.email = 'Email is required';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    errors.email = 'Enter a valid email address';
-  }
-  if (!password) {
-    errors.password = 'Password is required';
-  }
-  return errors;
-}
+type Errors = { email?: string; password?: string };
 
+/** Sign in (Figma C / C2 / D). */
 export default function LoginScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { showToast } = useToast();
   const [login, { isLoading }] = useLoginMutation();
+  const [resend, { isLoading: isResending }] = useRequestActivationMutation();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<Errors>({});
+  const [unverified, setUnverified] = useState(false);
 
   async function handleLogin() {
-    const errs = validate(email, password);
-    if (Object.keys(errs).length) {
-      setErrors(errs);
+    const next: Errors = { email: validateEmail(email) };
+    if (!password) next.password = 'Password is required';
+    if (next.email || next.password) {
+      setErrors(next);
       return;
     }
     setErrors({});
+    setUnverified(false);
 
     try {
       const tokens = await login({ userLogin: { email: email.trim(), password } }).unwrap();
       dispatch(tokensReceived(tokens));
-      // Replace with the main app — back-button cannot return to login
+      showToast('Welcome back!', 'info', 2000);
       router.replace('/(tabs)');
     } catch (err: any) {
       const status = err?.status;
-      if (status === 400 || status === 403) {
+      if (status === 403) {
+        setUnverified(true);
+        showToast('Your account is not active yet. Check your email for a verification link.', 'error', 4000);
+      } else if (status === 400 || status === 401) {
         showToast('Invalid email or password.', 'error');
       } else {
         showToast('Something went wrong. Try again.', 'error');
@@ -63,79 +52,65 @@ export default function LoginScreen() {
     }
   }
 
+  async function handleResend() {
+    try {
+      await resend({ email: email.trim() }).unwrap();
+      showToast('Verification email sent. Please check your inbox.', 'info');
+    } catch {
+      showToast("Couldn't send email. Please try again.", 'error');
+    }
+  }
+
   return (
-    <KeyboardAvoidingView
-      className="flex-1 bg-surface-3"
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView
-          contentContainerClassName="flex-grow justify-center px-6 py-12"
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+    <KeyboardAwareScrollView contentContainerClassName="px-4 pb-8 pt-12">
+      <BrandHeader />
 
-          {/* ── Branding ── */}
-          <View className="mb-10 items-center gap-2">
-            <AppText variant="screenTitle" color="primary">
-              DaVinci
-            </AppText>
-            <AppText variant="body" color="textSecondary" center>
-              The smarter way to learn
-            </AppText>
-          </View>
+      <Card variant="hero" className="mt-6 gap-4 px-6 py-6">
+        <AppText variant="section" accessibilityRole="header">
+          Sign in
+        </AppText>
 
-          {/* ── Form card ── */}
-          <View className="rounded-2xl border border-border bg-surface p-6 shadow-md gap-4">
-            <AppText variant="sectionHeading" color="textPrimary">
-              Sign in
-            </AppText>
+        <Input
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          autoComplete="email"
+          textContentType="emailAddress"
+          returnKeyType="next"
+          editable={!isLoading}
+          error={errors.email}
+        />
+        <Input
+          label="Password"
+          value={password}
+          onChangeText={setPassword}
+          placeholder="••••••••"
+          secureTextEntry
+          autoCapitalize="none"
+          autoComplete="password"
+          textContentType="password"
+          returnKeyType="go"
+          onSubmitEditing={handleLogin}
+          editable={!isLoading}
+          error={errors.password}
+        />
 
-            <Input
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              autoComplete="email"
-              placeholder="you@example.com"
-              error={errors.email}
-            />
+        <View className="mt-2 gap-3">
+          <Button title="Sign in" onPress={handleLogin} loading={isLoading} />
+          {unverified ? (
+            <Button title="Resend verification email" variant="outline" onPress={handleResend} loading={isResending} />
+          ) : null}
+        </View>
+      </Card>
 
-            <Input
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="password"
-              placeholder="••••••••"
-              error={errors.password}
-            />
-
-            <Button
-              title="Sign in"
-              loading={isLoading}
-              onPress={handleLogin}
-              fullWidth
-            />
-          </View>
-
-          {/* ── Footer ── */}
-          <View className="mt-6 flex-row items-center justify-center gap-1">
-            <AppText variant="body" color="textSecondary">
-              Don&apos;t have an account?
-            </AppText>
-            <AppText
-              variant="body"
-              color="primary"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onPress={() => router.push('/(auth)/signup' as any)}>
-              Sign up
-            </AppText>
-          </View>
-
-        </ScrollView>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+      <View className="mt-6 flex-row items-center justify-center gap-1">
+        <AppText color="textSecondary">Don&apos;t have an account?</AppText>
+        <TextLink title="Sign up" onPress={() => router.push('/(auth)/signup')} />
+      </View>
+    </KeyboardAwareScrollView>
   );
 }

@@ -1,18 +1,14 @@
 import { Image } from 'expo-image';
-import type { ImageSourcePropType } from 'react-native';
 import { View } from 'react-native';
 
-export type ImageQuestionProps = {
-  source: ImageSourcePropType;
-  aspectRatio?: number;
-};
-
-export function ImageQuestion({ source, aspectRatio = 16 / 9 }: ImageQuestionProps) {
+/** Question / option image: full width, max 200pt tall, radius 12, surface2 while loading. */
+export function ImageQuestion({ uri, alt }: { uri: string; alt?: string | null }) {
   return (
-    <View className="w-full overflow-hidden rounded-lg bg-surface-2">
+    <View className="w-full overflow-hidden rounded-md bg-surface-2">
       <Image
-        source={source}
-        style={{ width: '100%', aspectRatio, borderRadius: 16 }}
+        source={{ uri }}
+        accessibilityLabel={alt ?? undefined}
+        style={{ width: '100%', height: 200 }}
         contentFit="contain"
         transition={200}
       />

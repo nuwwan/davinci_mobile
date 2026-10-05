@@ -1,32 +1,33 @@
-import { PropsWithChildren, useState } from 'react';
-import { TouchableOpacity } from 'react-native';
+import { useState, type PropsWithChildren, type ReactNode } from 'react';
+import { Pressable, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useTheme } from '@/src/theme';
+import { AppText } from '@/components/ui/text';
+import { Icon } from '@/components/ui/icon';
 
-export function Collapsible({ children, title }: PropsWithChildren & { title: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const { colors } = useTheme();
-
+/** Expand/collapse block — header row toggles the body (e.g. attempt history items). */
+export function Collapsible({
+  title,
+  header,
+  initiallyOpen = false,
+  children,
+}: PropsWithChildren<{ title?: string; header?: ReactNode; initiallyOpen?: boolean }>) {
+  const [open, setOpen] = useState(initiallyOpen);
   return (
-    <ThemedView>
-      <TouchableOpacity
-        className="flex-row items-center gap-1.5"
-        onPress={() => setIsOpen((value) => !value)}
-        activeOpacity={0.8}>
-        <IconSymbol
-          name="chevron.right"
-          size={18}
-          weight="medium"
-          color={colors.textSecondary}
-          style={{ transform: [{ rotate: isOpen ? '90deg' : '0deg' }] }}
+    <View>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: open }}
+        onPress={() => setOpen((o) => !o)}
+        className="flex-row items-center gap-2 active:opacity-70">
+        <View className="flex-1">{header ?? <AppText variant="bodyStrong">{title}</AppText>}</View>
+        <Icon
+          name="chevR"
+          size={16}
+          color="textTertiary"
+          style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }}
         />
-
-        <ThemedText type="defaultSemiBold">{title}</ThemedText>
-      </TouchableOpacity>
-      {isOpen && <ThemedView className="ml-6 mt-1.5">{children}</ThemedView>}
-    </ThemedView>
+      </Pressable>
+      {open ? <View className="mt-3">{children}</View> : null}
+    </View>
   );
 }

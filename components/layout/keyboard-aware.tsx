@@ -1,61 +1,31 @@
 import type { ReactNode } from 'react';
-import {
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  TouchableWithoutFeedback,
-  View,
-  type KeyboardAvoidingViewProps,
-  type ScrollViewProps,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, ScrollView, type ScrollViewProps } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-const defaultBehavior: KeyboardAvoidingViewProps['behavior'] =
-  Platform.OS === 'ios' ? 'padding' : 'height';
+import { cn } from '@/lib/cn';
 
-type KeyboardAvoidingScreenProps = {
+type Props = ScrollViewProps & {
   children: ReactNode;
-  behavior?: KeyboardAvoidingViewProps['behavior'];
-  className?: string;
-};
-
-/** Wraps content with platform keyboard behavior (plan: padding on iOS, height on Android). */
-export function KeyboardAvoidingScreen({
-  children,
-  behavior = defaultBehavior,
-  className,
-}: KeyboardAvoidingScreenProps) {
-  return (
-    <KeyboardAvoidingView className={className ?? 'flex-1'} behavior={behavior}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1">{children}</View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
-  );
-}
-
-type KeyboardScrollProps = ScrollViewProps & {
-  children: ReactNode;
-  behavior?: KeyboardAvoidingViewProps['behavior'];
   contentContainerClassName?: string;
 };
 
-/** Scrollable form area with keyboard avoidance and tap-to-dismiss. */
-export function KeyboardAwareScrollView({
-  children,
-  behavior = defaultBehavior,
-  contentContainerClassName,
-  keyboardShouldPersistTaps = 'handled',
-  ...scrollProps
-}: KeyboardScrollProps) {
+/**
+ * Form screen shell: safe area + KeyboardAvoidingView + ScrollView so the keyboard never
+ * covers the focused input. Taps on empty space dismiss the keyboard.
+ */
+export function KeyboardAwareScrollView({ children, contentContainerClassName, ...scrollProps }: Props) {
   return (
-    <KeyboardAvoidingView className="flex-1" behavior={behavior}>
-      <ScrollView
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        contentContainerClassName={contentContainerClassName ?? 'grow'}
-        {...scrollProps}>
-        {children}
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <SafeAreaView edges={['top', 'left', 'right', 'bottom']} className="flex-1 bg-surface-3">
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}
+          contentContainerClassName={cn('grow', contentContainerClassName)}
+          {...scrollProps}>
+          {children}
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

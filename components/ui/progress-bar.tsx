@@ -5,43 +5,29 @@ import { cn } from '@/lib/cn';
 export type ProgressBarProps = ViewProps & {
   /** 0–1 */
   progress: number;
-  /** Default 4px — daily header spec */
-  height?: number;
-  trackColorToken?: 'surface2' | 'surface';
-  fillColorToken?: 'primary' | 'secondary';
+  /** Track height — 8 (default, headline metrics) or 6 (per-subject rows). */
+  height?: 6 | 8;
+  tone?: 'primary' | 'success' | 'accent' | 'error';
   className?: string;
 };
 
-const TRACK_CLASS = {
-  surface2: 'bg-surface-2',
-  surface: 'bg-surface',
-} as const;
-
-const FILL_CLASS = {
+const FILL = {
   primary: 'bg-primary',
-  secondary: 'bg-secondary',
+  success: 'bg-success',
+  accent: 'bg-accent',
+  error: 'bg-error',
 } as const;
 
-export function ProgressBar({
-  progress,
-  height = 4,
-  trackColorToken = 'surface2',
-  fillColorToken = 'primary',
-  className,
-  style,
-  ...rest
-}: ProgressBarProps) {
-  const clamped = Math.min(1, Math.max(0, progress));
-
+export function ProgressBar({ progress, height = 8, tone = 'primary', className, style, ...rest }: ProgressBarProps) {
+  const clamped = Math.min(1, Math.max(0, progress || 0));
   return (
     <View
-      className={cn('w-full overflow-hidden rounded-full', TRACK_CLASS[trackColorToken], className)}
+      accessibilityRole="progressbar"
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(clamped * 100) }}
+      className={cn('w-full overflow-hidden rounded-full bg-surface-2', className)}
       style={[{ height }, style]}
       {...rest}>
-      <View
-        className={cn('h-full rounded-full', FILL_CLASS[fillColorToken])}
-        style={{ width: `${clamped * 100}%` }}
-      />
+      <View className={cn('h-full rounded-full', FILL[tone])} style={{ width: `${clamped * 100}%` }} />
     </View>
   );
 }

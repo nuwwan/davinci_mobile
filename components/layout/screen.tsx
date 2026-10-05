@@ -1,36 +1,72 @@
-import type { ViewProps } from 'react-native';
-import { View } from 'react-native';
+import type { ReactNode } from 'react';
+import { RefreshControl, ScrollView, View, type ScrollViewProps, type ViewProps } from 'react-native';
 import type { Edge } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { cn } from '@/lib/cn';
+import { useTheme } from '@/src/theme';
 
 export type ScreenProps = ViewProps & {
-  children: React.ReactNode;
-  /** Safe-area edges; bottom is included by default for home indicator */
+  children: ReactNode;
+  /** Safe-area edges. Tab screens omit `bottom` (the tab bar owns it). */
   edges?: readonly Edge[];
-  /** When false, content can extend under the home indicator (e.g. full-screen readers) */
-  safeBottom?: boolean;
   className?: string;
 };
 
-export function Screen({
-  children,
-  className,
-  edges = ['top', 'left', 'right'],
-  safeBottom = true,
-  ...rest
-}: ScreenProps) {
-  const resolvedEdges: readonly Edge[] = safeBottom ? [...edges, 'bottom'] : edges;
-
+/** Root container for every screen: surface3 background + safe-area insets. */
+export function Screen({ children, className, edges = ['top', 'left', 'right'], ...rest }: ScreenProps) {
   return (
-    <SafeAreaView edges={resolvedEdges} className={cn('flex-1 bg-surface-3', className)} {...rest}>
+    <SafeAreaView edges={edges} className={cn('flex-1 bg-surface-3', className)} {...rest}>
       {children}
     </SafeAreaView>
   );
 }
 
-/** Same background as Screen but without safe-area padding — use inside Screen or modals when you need a plain flex container */
+export type ScrollScreenProps = Omit<ScrollViewProps, 'children'> & {
+  children: ReactNode;
+  edges?: readonly Edge[];
+  /** Pinned above the scroll area (e.g. offline strip). */
+  top?: ReactNode;
+  /** Pull-to-refresh. */
+  refreshing?: boolean;
+  onRefresh?: () => void;
+  contentClassName?: string;
+};
+
+/**
+ * Standard scrolling screen: 16pt gutters, 20pt vertical rhythm between blocks,
+ * pull-to-refresh, grows to fill so empty states can center.
+ */
+export function ScrollScreen({
+  children,
+  edges,
+  top,
+  refreshing,
+  onRefresh,
+  contentClassName,
+  ...rest
+}: ScrollScreenProps) {
+  const { colors } = useTheme();
+  return (
+    <Screen edges={edges}>
+      {top}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerClassName={cn('grow gap-5 px-4 pb-10 pt-3', contentClassName)}
+        refreshControl={
+          onRefresh ? (
+            <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.primary} colors={[colors.primary]} />
+          ) : undefined
+        }
+        {...rest}>
+        {children}
+      </ScrollView>
+    </Screen>
+  );
+}
+
+/** Plain surface3 flex container without safe-area padding. */
 export function ScreenBody({ children, className, ...rest }: ViewProps & { className?: string }) {
   return (
     <View className={cn('flex-1 bg-surface-3', className)} {...rest}>

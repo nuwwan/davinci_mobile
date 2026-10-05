@@ -61,6 +61,51 @@ components:
       - created_at
       title: AdminSubAreaResponse
       type: object
+    AttemptHistoryItem:
+      description: One row in the learner's attempt history list.
+      properties:
+        attempt_id:
+          format: uuid
+          title: Attempt Id
+          type: string
+        attempted_at:
+          title: Attempted At
+        correct_answer_index:
+          title: Correct Answer Index
+          type: integer
+        is_correct:
+          title: Is Correct
+          type: boolean
+        question_id:
+          format: uuid
+          title: Question Id
+          type: string
+        question_title:
+          title: Question Title
+          type: string
+        score:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Score
+        selected_option_index:
+          title: Selected Option Index
+          type: integer
+        time_taken_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Time Taken Seconds
+      required:
+      - attempt_id
+      - question_id
+      - question_title
+      - selected_option_index
+      - correct_answer_index
+      - is_correct
+      - attempted_at
+      title: AttemptHistoryItem
+      type: object
     AttemptResult:
       description: Response returned immediately after an attempt is submitted.
       properties:
@@ -361,6 +406,29 @@ components:
       - page
       - page_size
       title: PaginatedResponse[AdminSubAreaResponse]
+      type: object
+    PaginatedResponse_AttemptHistoryItem_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/AttemptHistoryItem'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[AttemptHistoryItem]
       type: object
     PaginatedResponse_QuestionResponse_:
       properties:
@@ -2371,6 +2439,51 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Submit an attempt
+      tags:
+      - Learner
+  /learner/attempts/history:
+    get:
+      description: Returns the authenticated learner's past question attempts sorted by most recent first.
+        Supports page / page_size pagination.
+      operationId: get_attempt_history_learner_attempts_history_get
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_AttemptHistoryItem_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get learner's attempt history
       tags:
       - Learner
   /learner/daily-question:

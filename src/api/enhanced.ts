@@ -54,10 +54,15 @@ export const davinciApi = generated.enhanceEndpoints({
     updateCurrentUser: {
       invalidatesTags: ['User'],
     },
-    // After submitting an attempt invalidate the daily-question cache so
-    // is_answered updates to true if re-fetched.
+    // After submitting an attempt: only invalidate the history list so the
+    // new attempt appears there immediately. Do NOT invalidate 'Learner' —
+    // that would auto-refetch the daily question and jump to the next one
+    // before the user taps "Try another question".
     createAttemptLearnerAttemptsPost: {
-      invalidatesTags: ['Learner'],
+      invalidatesTags: ['AttemptHistory'],
+    },
+    getAttemptHistoryLearnerAttemptsHistoryGet: {
+      providesTags: ['AttemptHistory'],
     },
     readMyProfileLearnerMeGet: {
       providesTags: ['User'],
@@ -124,6 +129,7 @@ export {
   useGetCurrentUserQuery,
   useLazyGetCurrentUserQuery,
   useUpdateCurrentUserMutation,
+  useRequestActivationMutation,
   // Learner
   useReadDailyQuestionLearnerDailyQuestionGetQuery as useGetDailyQuestionQuery,
   useLazyReadDailyQuestionLearnerDailyQuestionGetQuery as useLazyGetDailyQuestionQuery,
@@ -147,6 +153,9 @@ export {
   useLazyGetSubjectQuery,
   useCreateSubjectMutation,
   useDeleteSubjectMutation,
+  // Attempt history
+  useGetAttemptHistoryLearnerAttemptsHistoryGetQuery as useGetAttemptHistoryQuery,
+  useLazyGetAttemptHistoryLearnerAttemptsHistoryGetQuery as useLazyGetAttemptHistoryQuery,
 } from './generated'
 
 export type {
@@ -187,4 +196,8 @@ export type {
   TokenResponse,
   UserCreate,
   UserLogin,
+  // Attempt history
+  AttemptHistoryItem,
+  GetAttemptHistoryLearnerAttemptsHistoryGetApiArg as GetAttemptHistoryApiArg,
+  PaginatedResponseAttemptHistoryItem as AttemptHistoryPage,
 } from './generated'

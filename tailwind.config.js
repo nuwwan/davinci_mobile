@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 
 /**
- * Mirrors davinci_web/tailwind.config.js so both platforms share the same
- * semantic class names (bg-primary, text-t-secondary, border-border, etc.).
- * Color values come from CSS variables defined in global.css (light + dark).
+ * DaVinci design system — Tailwind/NativeWind theme.
+ * Colors resolve to CSS variables in global.css (light + dark), so every class
+ * (bg-primary, text-t-secondary, border-error-border …) flips with the color scheme.
+ * Mirror of src/theme (colors.ts / typography.ts / tokens.ts).
  */
 const v = (name) => `rgb(var(${name}) / <alpha-value>)`;
 
@@ -24,9 +25,9 @@ module.exports = {
           light: v('--color-primary-light'),
           muted: v('--color-primary-muted'),
         },
-        secondary: {
-          DEFAULT: v('--color-secondary'),
-          light: v('--color-secondary-light'),
+        accent: {
+          DEFAULT: v('--color-accent'),
+          light: v('--color-accent-light'),
         },
         surface: {
           DEFAULT: v('--color-surface'),
@@ -43,48 +44,51 @@ module.exports = {
           tertiary: v('--color-text-tertiary'),
           inverse: v('--color-text-inverse'),
         },
-        correct: {
-          DEFAULT: v('--color-correct'),
-          bg: v('--color-correct-bg'),
-          border: v('--color-correct-border'),
+        success: {
+          DEFAULT: v('--color-success'),
+          bg: v('--color-success-bg'),
+          border: v('--color-success-border'),
         },
-        wrong: {
-          DEFAULT: v('--color-wrong'),
-          bg: v('--color-wrong-bg'),
-          border: v('--color-wrong-border'),
-        },
-        streak: {
-          DEFAULT: v('--color-streak'),
-          bg: v('--color-streak-bg'),
+        error: {
+          DEFAULT: v('--color-error'),
+          bg: v('--color-error-bg'),
+          border: v('--color-error-border'),
         },
         scrim: v('--color-scrim'),
       },
       borderRadius: {
-        sm: '8px',
-        md: '12px',
-        lg: '16px',
-        xl: '20px',
-        '2xl': '28px',
+        xs: '4px',
+        sm: '8px', // inputs, option letter badge
+        md: '12px', // MCQ options, toasts, banners, search bar
+        lg: '16px', // buttons, list cards, stat tiles
+        xl: '20px', // section cards, bottom sheets
+        '2xl': '28px', // hero cards (auth form, daily question)
         full: '9999px',
       },
+      spacing: {
+        gutter: '16px',
+      },
       fontFamily: {
-        // Body — Inter
         inter: ['Inter_400Regular'],
         'inter-medium': ['Inter_500Medium'],
         'inter-semibold': ['Inter_600SemiBold'],
         'inter-bold': ['Inter_700Bold'],
-        // Display — Plus Jakarta Sans
         display: ['PlusJakartaSans_700Bold'],
         'display-semibold': ['PlusJakartaSans_600SemiBold'],
       },
       fontSize: {
+        'display-lg': ['40px', '48px'],
         'page-title': ['32px', '38px'],
         section: ['24px', '31px'],
         'card-title': ['18px', '25px'],
         question: ['15px', '23px'],
+        button: ['15px', '18px'],
         body: ['14px', '21px'],
+        'body-tight': ['14px', '20px'],
         meta: ['13px', '19px'],
         hint: ['12px', '17px'],
+        badge: ['12px', '15px'],
+        tab: ['11px', '13px'],
       },
     },
   },

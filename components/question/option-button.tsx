@@ -2,15 +2,11 @@ import { Pressable, View } from 'react-native';
 
 import { AppText } from '@/components/ui/text';
 import { cn } from '@/lib/cn';
+import { optionLetter } from '@/lib/question';
 import type { ColorName } from '@/src/theme';
 
-export type OptionVisualState =
-  | 'default'
-  | 'pressed'
-  | 'selected'
-  | 'correct'
-  | 'wrong'
-  | 'dimmed';
+/** Figma "MCQ OPTIONS": default · selected · correct · wrong · dimmed. */
+export type OptionVisualState = 'default' | 'selected' | 'correct' | 'wrong' | 'dimmed';
 
 export type OptionButtonProps = {
   index: number;
@@ -21,87 +17,65 @@ export type OptionButtonProps = {
   className?: string;
 };
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-function letterFor(index: number) {
-  return LETTERS[index] ?? String(index + 1);
-}
-
-type StateStyle = {
-  container: string;
-  badge: string;
-  badgeText: ColorName;
-  label: ColorName;
-};
-
-const STATE_STYLE: Record<OptionVisualState, StateStyle> = {
+const STYLE: Record<
+  OptionVisualState,
+  { box: string; badge: string; badgeText: ColorName; label: ColorName }
+> = {
   default: {
-    container:
-      'border border-border bg-surface-2 active:border-primary active:bg-primary-light',
-    badge: 'bg-surface-3',
+    box: 'border border-border bg-surface active:border-primary-muted active:bg-primary-light',
+    badge: 'bg-surface-2',
     badgeText: 'textSecondary',
     label: 'textPrimary',
   },
-  pressed: {
-    container: 'border border-primary bg-primary-light',
-    badge: 'bg-primary',
-    badgeText: 'textInverse',
-    label: 'textPrimary',
-  },
   selected: {
-    container: 'border-[1.5px] border-primary bg-primary-light',
+    box: 'border-[1.5px] border-primary bg-primary-light',
     badge: 'bg-primary',
     badgeText: 'textInverse',
     label: 'textPrimary',
   },
   correct: {
-    container: 'border border-correct-border bg-correct-bg',
-    badge: 'bg-correct',
+    box: 'border border-success-border bg-success-bg',
+    badge: 'bg-success',
     badgeText: 'textInverse',
-    label: 'correct',
+    label: 'textPrimary',
   },
   wrong: {
-    container: 'border border-wrong-border bg-wrong-bg',
-    badge: 'bg-wrong',
+    box: 'border border-error-border bg-error-bg',
+    badge: 'bg-error',
     badgeText: 'textInverse',
-    label: 'wrong',
+    label: 'textPrimary',
   },
   dimmed: {
-    container: 'border border-border bg-surface',
-    badge: 'bg-surface-3',
+    box: 'border border-border bg-surface',
+    badge: 'bg-surface-2',
     badgeText: 'textTertiary',
     label: 'textTertiary',
   },
 };
 
-export function OptionButton({
-  index,
-  label,
-  state,
-  onPress,
-  disabled,
-  className,
-}: OptionButtonProps) {
-  const styleSet = STATE_STYLE[state];
+const A11Y_SUFFIX: Partial<Record<OptionVisualState, string>> = {
+  selected: ', selected',
+  correct: ', correct answer',
+  wrong: ', your answer, incorrect',
+};
 
+/** One MCQ answer row: 28pt letter badge + label, min 52pt, radius 12. */
+export function OptionButton({ index, label, state, onPress, disabled, className }: OptionButtonProps) {
+  const s = STYLE[state];
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole="radio"
+      accessibilityLabel={`Option ${optionLetter(index)}: ${label}${A11Y_SUFFIX[state] ?? ''}`}
+      accessibilityState={{ selected: state === 'selected', disabled }}
       disabled={disabled}
       onPress={onPress}
-      className={cn(
-        'min-h-[52px] w-full flex-row items-center rounded-lg px-3 py-2',
-        styleSet.container,
-        disabled && 'opacity-50',
-        className
-      )}>
-      <View
-        className={cn('mr-3 h-7 w-7 items-center justify-center rounded-md', styleSet.badge)}>
-        <AppText variant="metadata" color={styleSet.badgeText} center>
-          {letterFor(index)}
+      className={cn('min-h-[52px] w-full flex-row items-center gap-3 rounded-md px-3 py-3', s.box, className)}>
+      <View className={cn('h-7 w-7 items-center justify-center rounded-sm', s.badge)}>
+        <AppText variant="label" weight="semibold" color={s.badgeText}>
+          {optionLetter(index)}
         </AppText>
       </View>
-      <AppText variant="body" color={styleSet.label} className="flex-1">
+      <AppText variant="body" color={s.label} className="flex-1">
         {label}
       </AppText>
     </Pressable>

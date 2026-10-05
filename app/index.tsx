@@ -1,11 +1,16 @@
 /**
- * Root entry point.
- *
- * Shows nothing while BootstrapAuth + AuthGate determine where to redirect.
- * After bootstrap, AuthGate pushes the user to either /(auth)/login or /(tabs).
+ * Splash / bootstrap (Figma A).
+ * Visible while BootstrapAuth + AuthGate resolve the session, then AuthGate
+ * replaces it with /(auth)/login or /(tabs).
  */
 import { View } from 'react-native';
 
-export default function Index() {
-  return <View />;
+import { BrandHeader } from '@/components/layout';
+
+export default function Splash() {
+  return (
+    <View className="flex-1 items-center justify-center bg-surface-3">
+      <BrandHeader />
+    </View>
+  );
 }
