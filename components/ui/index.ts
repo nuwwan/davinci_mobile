@@ -6,6 +6,7 @@ export { Input, SearchBar, type InputProps } from './input';
 export { Badge, StatusDot, type BadgeProps, type BadgeTone } from './badge';
 export { Chip, ChipGroup, type ChipProps, type ChipOption, type ChipGroupProps } from './chip';
 export { SegmentedControl, type SegmentOption } from './segmented-control';
+export { SegmentedTabs, type SegmentedTab } from './segmented-tabs';
 export { Switch } from './switch';
 export { Card, type CardProps, type CardVariant, type CardTone } from './card';
 export { InfoRow, ListRow, Divider } from './list-row';

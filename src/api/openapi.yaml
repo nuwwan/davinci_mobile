@@ -161,6 +161,143 @@ components:
       - selected_option_index
       title: AttemptSubmit
       type: object
+    CatalogSearchResponse:
+      properties:
+        query:
+          title: Query
+          type: string
+        subjects:
+          items:
+            $ref: '#/components/schemas/CatalogSubject'
+          title: Subjects
+          type: array
+        topics:
+          items:
+            $ref: '#/components/schemas/CatalogTopic'
+          title: Topics
+          type: array
+      required:
+      - query
+      - subjects
+      - topics
+      title: CatalogSearchResponse
+      type: object
+    CatalogSubject:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        is_subscribed:
+          title: Is Subscribed
+          type: boolean
+        name:
+          title: Name
+          type: string
+        question_count:
+          description: Active + verified questions in the subject
+          title: Question Count
+          type: integer
+        topic_count:
+          description: Active sub-areas (topics) in the subject
+          title: Topic Count
+          type: integer
+      required:
+      - id
+      - name
+      - topic_count
+      - question_count
+      - is_subscribed
+      title: CatalogSubject
+      type: object
+    CatalogTopic:
+      properties:
+        answered_count:
+          description: Distinct questions of the topic the learner attempted
+          title: Answered Count
+          type: integer
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        is_subscribed:
+          title: Is Subscribed
+          type: boolean
+        name:
+          title: Name
+          type: string
+        question_count:
+          title: Question Count
+          type: integer
+        subject_id:
+          title: Subject Id
+          type: integer
+        subject_name:
+          title: Subject Name
+          type: string
+      required:
+      - id
+      - subject_id
+      - subject_name
+      - name
+      - question_count
+      - answered_count
+      - is_subscribed
+      title: CatalogTopic
+      type: object
+    CatalogTopicDetail:
+      properties:
+        answered_count:
+          description: Distinct questions of the topic the learner attempted
+          title: Answered Count
+          type: integer
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        difficulty_counts:
+          items:
+            $ref: '#/components/schemas/DifficultyCount'
+          title: Difficulty Counts
+          type: array
+        id:
+          title: Id
+          type: integer
+        is_subscribed:
+          title: Is Subscribed
+          type: boolean
+        name:
+          title: Name
+          type: string
+        question_count:
+          title: Question Count
+          type: integer
+        subject_id:
+          title: Subject Id
+          type: integer
+        subject_name:
+          title: Subject Name
+          type: string
+      required:
+      - id
+      - subject_id
+      - subject_name
+      - name
+      - question_count
+      - answered_count
+      - is_subscribed
+      - difficulty_counts
+      title: CatalogTopicDetail
+      type: object
     CreatorSubAreaSubscriptionResponse:
       description: Returned when a creator subscribes to or unsubscribes from a sub-area.
       properties:
@@ -209,12 +346,30 @@ components:
       type: object
     CreatorSummaryResponse:
       properties:
+        attempt_history:
+          additionalProperties:
+            type: integer
+          description: Daily attempt counts over the previous 30 days.
+          title: Attempt History
+          type: object
+        learner_subscriptions:
+          additionalProperties:
+            type: integer
+          description: Top 5 subjects by active learner subscription count, sorted descending.
+          title: Learner Subscriptions
+          type: object
         question_attempts:
           title: Question Attempts
           type: integer
         question_likes:
           title: Question Likes
           type: integer
+        questions_by_subject:
+          additionalProperties:
+            type: integer
+          description: Top 5 subjects by question count, sorted descending.
+          title: Questions By Subject
+          type: object
         questions_count:
           title: Questions Count
           type: integer
@@ -250,6 +405,19 @@ components:
       - is_answered
       - question
       title: DailyQuestionResponse
+      type: object
+    DifficultyCount:
+      properties:
+        difficulty_level:
+          title: Difficulty Level
+          type: integer
+        question_count:
+          title: Question Count
+          type: integer
+      required:
+      - difficulty_level
+      - question_count
+      title: DifficultyCount
       type: object
     HTTPValidationError:
       properties:
@@ -384,6 +552,25 @@ components:
       - email
       title: LearnerProfileUpdate
       type: object
+    MyAttemptSummary:
+      properties:
+        attempt_id:
+          format: uuid
+          title: Attempt Id
+          type: string
+        attempted_at:
+          format: date-time
+          title: Attempted At
+          type: string
+        is_correct:
+          title: Is Correct
+          type: boolean
+      required:
+      - attempt_id
+      - is_correct
+      - attempted_at
+      title: MyAttemptSummary
+      type: object
     PaginatedResponse_AdminSubAreaResponse_:
       properties:
         items:
@@ -429,6 +616,52 @@ components:
       - page
       - page_size
       title: PaginatedResponse[AttemptHistoryItem]
+      type: object
+    PaginatedResponse_CatalogSubject_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/CatalogSubject'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[CatalogSubject]
+      type: object
+    PaginatedResponse_CatalogTopic_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/CatalogTopic'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[CatalogTopic]
       type: object
     PaginatedResponse_QuestionResponse_:
       properties:
@@ -544,6 +777,29 @@ components:
       - page
       - page_size
       title: PaginatedResponse[TagResponse]
+      type: object
+    PaginatedResponse_TopicQuestion_:
+      properties:
+        items:
+          items:
+            $ref: '#/components/schemas/TopicQuestion'
+          title: Items
+          type: array
+        page:
+          title: Page
+          type: integer
+        page_size:
+          title: Page Size
+          type: integer
+        total:
+          title: Total
+          type: integer
+      required:
+      - items
+      - total
+      - page
+      - page_size
+      title: PaginatedResponse[TopicQuestion]
       type: object
     QuestionContent:
       properties:
@@ -1036,6 +1292,32 @@ components:
       - created_at
       title: SubAreaSubscriptionResponse
       type: object
+    SubAreaUpdate:
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        display_order:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Display Order
+        is_active:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+      title: SubAreaUpdate
+      type: object
     SubjectCreate:
       properties:
         description:
@@ -1121,6 +1403,23 @@ components:
       - created_at
       title: SubjectSubscriptionResponse
       type: object
+    SubjectUpdate:
+      properties:
+        description:
+          anyOf:
+          - maxLength: 255
+            type: string
+          - type: 'null'
+          title: Description
+        name:
+          anyOf:
+          - maxLength: 100
+            minLength: 1
+            type: string
+          - type: 'null'
+          title: Name
+      title: SubjectUpdate
+      type: object
     TagCreate:
       properties:
         description:
@@ -1191,6 +1490,49 @@ components:
       - access_token
       - expires_in
       title: TokenResponse
+      type: object
+    TopicQuestion:
+      description: Question preview — never exposes options, correct answer or explanation.
+      properties:
+        correct_rate:
+          anyOf:
+          - type: number
+          - type: 'null'
+          description: 0..1, null when there are no attempts
+          title: Correct Rate
+        difficulty_level:
+          title: Difficulty Level
+          type: integer
+        id:
+          format: uuid
+          title: Id
+          type: string
+        is_verified:
+          title: Is Verified
+          type: boolean
+        my_attempt:
+          anyOf:
+          - $ref: '#/components/schemas/MyAttemptSummary'
+          - type: 'null'
+          description: Learner's first attempt, if any
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+        title:
+          title: Title
+          type: string
+        total_attempts:
+          title: Total Attempts
+          type: integer
+      required:
+      - id
+      - title
+      - difficulty_level
+      - is_verified
+      - total_attempts
+      title: TopicQuestion
       type: object
     UserCreate:
       properties:
@@ -1449,6 +1791,17 @@ paths:
           - type: boolean
           - type: 'null'
           title: Is Active
+      - description: Filter questions by creator ID
+        in: query
+        name: creator_id
+        required: false
+        schema:
+          anyOf:
+          - format: uuid
+            type: string
+          - type: 'null'
+          description: Filter questions by creator ID
+          title: Creator Id
       - description: Page number
         in: query
         name: page
@@ -1490,36 +1843,6 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: List the current user's questions (search + pagination)
-      tags:
-      - Admin
-    post:
-      operationId: createQuestion
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/QuestionCreate'
-        required: true
-      responses:
-        '201':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuestionResponse'
-          description: Successful Response
-        '401':
-          description: Not authenticated
-        '403':
-          description: Operation not permitted for this role
-        '422':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HTTPValidationError'
-          description: Validation Error
-      security:
-      - OAuth2PasswordBearer: []
-      summary: Create a new question (creator/admin dashboard)
       tags:
       - Admin
   /admin/rewards/:
@@ -1567,7 +1890,7 @@ paths:
         '401':
           description: Not authenticated
         '403':
-          description: Operation not permitted for this role
+          description: Admin only
         '422':
           content:
             application/json:
@@ -1576,7 +1899,7 @@ paths:
           description: Validation Error
       security:
       - OAuth2PasswordBearer: []
-      summary: List the current user's rewards (search + pagination)
+      summary: List all rewards (search + pagination)
       tags:
       - Admin
     post:
@@ -1597,7 +1920,7 @@ paths:
         '401':
           description: Not authenticated
         '403':
-          description: Operation not permitted for this role
+          description: Admin only
         '422':
           content:
             application/json:
@@ -1606,7 +1929,7 @@ paths:
           description: Validation Error
       security:
       - OAuth2PasswordBearer: []
-      summary: Create a new reward (creator/admin dashboard)
+      summary: Create a new reward (admin only)
       tags:
       - Admin
   /admin/sub-areas/:
@@ -1735,6 +2058,69 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: List all active sub-areas for a given subject
+      tags:
+      - Admin
+  /admin/sub-areas/{sub_area_id}:
+    get:
+      operationId: getSubArea
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubAreaResponse'
+          description: Successful Response
+        '404':
+          description: Sub-area not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      summary: Get a sub-area by id
+      tags:
+      - Admin
+    put:
+      operationId: updateSubArea
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubAreaUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubAreaResponse'
+          description: Successful Response
+        '404':
+          description: Sub-area not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Edit a sub-area (admin)
       tags:
       - Admin
   /admin/subjects/:
@@ -1876,6 +2262,126 @@ paths:
                 $ref: '#/components/schemas/HTTPValidationError'
           description: Validation Error
       summary: Get a subject by id
+      tags:
+      - Admin
+    put:
+      operationId: updateSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubjectUpdate'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectResponse'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '409':
+          description: Name already in use
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Edit a subject (admin)
+      tags:
+      - Admin
+  /admin/tags/:
+    get:
+      operationId: listAdminTags
+      parameters:
+      - description: Case-insensitive name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive name search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_TagResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Admin only
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List all tags across all creators (admin, search + pagination)
+      tags:
+      - Admin
+  /admin/tags/{tag_id}:
+    delete:
+      operationId: deleteTag
+      parameters:
+      - in: path
+        name: tag_id
+        required: true
+        schema:
+          title: Tag Id
+          type: integer
+      responses:
+        '204':
+          description: Successful Response
+        '404':
+          description: Tag not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Remove a tag and all its question associations (admin)
       tags:
       - Admin
   /auth/activate:
@@ -2068,6 +2574,63 @@ paths:
       summary: Activate a user account from an email verification token
       tags:
       - Authentication
+  /creator/rewards/:
+    get:
+      operationId: listCreatorRewards
+      parameters:
+      - description: Case-insensitive title search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive title search
+          title: Search
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_RewardResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Creator or admin only
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List rewards created by the current user (search + pagination)
+      tags:
+      - Creator
   /creator/sub-areas/:
     get:
       operationId: listCreatorSubAreas
@@ -2486,6 +3049,254 @@ paths:
       summary: Get learner's attempt history
       tags:
       - Learner
+  /learner/catalog/search:
+    get:
+      operationId: searchCatalog
+      parameters:
+      - description: Search text (2-100 chars)
+        in: query
+        name: q
+        required: true
+        schema:
+          description: Search text (2-100 chars)
+          title: Q
+          type: string
+      - description: Max results per group
+        in: query
+        name: limit
+        required: false
+        schema:
+          default: 20
+          description: Max results per group
+          maximum: 50
+          minimum: 1
+          title: Limit
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogSearchResponse'
+          description: Successful Response
+        '422':
+          description: q must be 2-100 characters
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Search subjects and topics by name
+      tags:
+      - Learner
+  /learner/catalog/subjects:
+    get:
+      operationId: listCatalogSubjects
+      parameters:
+      - in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          title: Page
+          type: integer
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_CatalogSubject_'
+          description: Successful Response
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List subjects with counts and my subscription state
+      tags:
+      - Learner
+  /learner/catalog/subjects/{subject_id}:
+    get:
+      operationId: getCatalogSubject
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogSubject'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get one subject
+      tags:
+      - Learner
+  /learner/catalog/subjects/{subject_id}/topics:
+    get:
+      operationId: listSubjectTopics
+      parameters:
+      - in: path
+        name: subject_id
+        required: true
+        schema:
+          title: Subject Id
+          type: integer
+      - description: Case-insensitive topic name search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive topic name search
+          title: Search
+      - in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          title: Page
+          type: integer
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          default: 50
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_CatalogTopic_'
+          description: Successful Response
+        '404':
+          description: Subject not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List topics (sub-areas) of a subject
+      tags:
+      - Learner
+  /learner/catalog/topics/{sub_area_id}:
+    get:
+      operationId: getCatalogTopic
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogTopicDetail'
+          description: Successful Response
+        '404':
+          description: Topic not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Get one topic with per-difficulty question counts
+      tags:
+      - Learner
+  /learner/catalog/topics/{sub_area_id}/questions:
+    get:
+      operationId: listTopicQuestions
+      parameters:
+      - in: path
+        name: sub_area_id
+        required: true
+        schema:
+          title: Sub Area Id
+          type: integer
+      - in: query
+        name: difficulty_level
+        required: true
+        schema:
+          maximum: 5
+          minimum: 1
+          title: Difficulty Level
+          type: integer
+      - in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          minimum: 1
+          title: Page
+          type: integer
+      - in: query
+        name: page_size
+        required: false
+        schema:
+          default: 20
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_TopicQuestion_'
+          description: Successful Response
+        '404':
+          description: Topic not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List question previews for a topic and difficulty
+      tags:
+      - Learner
   /learner/daily-question:
     get:
       description: Returns the question published by an admin for today. The `is_answered` flag indicates
@@ -2720,6 +3531,145 @@ paths:
       summary: Subscribe to a subject
       tags:
       - Learner
+  /questions/:
+    get:
+      operationId: listMyQuestions
+      parameters:
+      - description: Case-insensitive title search
+        in: query
+        name: search
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Case-insensitive title search
+          title: Search
+      - in: query
+        name: subject_id
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Subject Id
+      - in: query
+        name: sub_area_id
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Sub Area Id
+      - in: query
+        name: difficulty_level
+        required: false
+        schema:
+          anyOf:
+          - maximum: 5
+            minimum: 1
+            type: integer
+          - type: 'null'
+          title: Difficulty Level
+      - in: query
+        name: tags
+        required: false
+        schema:
+          anyOf:
+          - items:
+              type: string
+            type: array
+          - type: 'null'
+          title: Tags
+      - in: query
+        name: is_verified
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Verified
+      - in: query
+        name: is_active
+        required: false
+        schema:
+          anyOf:
+          - type: boolean
+          - type: 'null'
+          title: Is Active
+      - description: Page number
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          description: Page number
+          minimum: 1
+          title: Page
+          type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 10
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+          title: Page Size
+          type: integer
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse_QuestionResponse_'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Creator or admin only
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: List questions created by the current user (search + pagination)
+      tags:
+      - Questions
+    post:
+      operationId: createQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionCreate'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+          description: Validation Error
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Create a new question
+      tags:
+      - Questions
   /questions/{question_id}:
     delete:
       operationId: deleteQuestion

@@ -59,7 +59,8 @@ export const davinciApi = generated.enhanceEndpoints({
     // that would auto-refetch the daily question and jump to the next one
     // before the user taps "Try another question".
     createAttemptLearnerAttemptsPost: {
-      invalidatesTags: ['AttemptHistory'],
+      // A new attempt changes history and every aggregate on the Stats tab.
+      invalidatesTags: ['AttemptHistory', 'Stats'],
     },
     getAttemptHistoryLearnerAttemptsHistoryGet: {
       providesTags: ['AttemptHistory'],
@@ -148,6 +149,11 @@ export {
   useGetQuestionStatsQuery,
   useLazyGetQuestionStatsQuery,
   useListSubjectsQuery,
+  // Learner subscriptions (Questions tab subscribe / unsubscribe)
+  useSubscribeToSubjectLearnerSubscriptionsSubjectsSubjectIdPostMutation as useSubscribeToSubjectMutation,
+  useUnsubscribeFromSubjectLearnerSubscriptionsSubjectsSubjectIdDeleteMutation as useUnsubscribeFromSubjectMutation,
+  useSubscribeToSubAreaLearnerSubscriptionsSubAreasSubAreaIdPostMutation as useSubscribeToTopicMutation,
+  useUnsubscribeFromSubAreaLearnerSubscriptionsSubAreasSubAreaIdDeleteMutation as useUnsubscribeFromTopicMutation,
   useLazyListSubjectsQuery,
   useGetSubjectQuery,
   useLazyGetSubjectQuery,

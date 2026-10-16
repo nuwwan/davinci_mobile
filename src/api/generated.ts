@@ -45,22 +45,12 @@ const injectedRtkApi = api
             tags: queryArg.tags,
             is_verified: queryArg.isVerified,
             is_active: queryArg.isActive,
+            creator_id: queryArg.creatorId,
             page: queryArg.page,
             page_size: queryArg.pageSize,
           },
         }),
         providesTags: ["Admin"],
-      }),
-      createQuestion: build.mutation<
-        CreateQuestionApiResponse,
-        CreateQuestionApiArg
-      >({
-        query: (queryArg) => ({
-          url: `/admin/questions/`,
-          method: "POST",
-          body: queryArg.questionCreate,
-        }),
-        invalidatesTags: ["Admin"],
       }),
       listAdminRewards: build.query<
         ListAdminRewardsApiResponse,
@@ -121,6 +111,23 @@ const injectedRtkApi = api
         }),
         providesTags: ["Admin"],
       }),
+      getSubArea: build.query<GetSubAreaApiResponse, GetSubAreaApiArg>({
+        query: (queryArg) => ({
+          url: `/admin/sub-areas/${queryArg.subAreaId}`,
+        }),
+        providesTags: ["Admin"],
+      }),
+      updateSubArea: build.mutation<
+        UpdateSubAreaApiResponse,
+        UpdateSubAreaApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/admin/sub-areas/${queryArg.subAreaId}`,
+          method: "PUT",
+          body: queryArg.subAreaUpdate,
+        }),
+        invalidatesTags: ["Admin"],
+      }),
       listAdminSubjects: build.query<
         ListAdminSubjectsApiResponse,
         ListAdminSubjectsApiArg
@@ -159,6 +166,37 @@ const injectedRtkApi = api
       getSubject: build.query<GetSubjectApiResponse, GetSubjectApiArg>({
         query: (queryArg) => ({ url: `/admin/subjects/${queryArg.subjectId}` }),
         providesTags: ["Admin"],
+      }),
+      updateSubject: build.mutation<
+        UpdateSubjectApiResponse,
+        UpdateSubjectApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/admin/subjects/${queryArg.subjectId}`,
+          method: "PUT",
+          body: queryArg.subjectUpdate,
+        }),
+        invalidatesTags: ["Admin"],
+      }),
+      listAdminTags: build.query<ListAdminTagsApiResponse, ListAdminTagsApiArg>(
+        {
+          query: (queryArg) => ({
+            url: `/admin/tags/`,
+            params: {
+              search: queryArg.search,
+              page: queryArg.page,
+              page_size: queryArg.pageSize,
+            },
+          }),
+          providesTags: ["Admin"],
+        },
+      ),
+      deleteTag: build.mutation<DeleteTagApiResponse, DeleteTagApiArg>({
+        query: (queryArg) => ({
+          url: `/admin/tags/${queryArg.tagId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: ["Admin"],
       }),
       requestActivation: build.mutation<
         RequestActivationApiResponse,
@@ -223,6 +261,20 @@ const injectedRtkApi = api
           },
         }),
         providesTags: ["Authentication"],
+      }),
+      listCreatorRewards: build.query<
+        ListCreatorRewardsApiResponse,
+        ListCreatorRewardsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/creator/rewards/`,
+          params: {
+            search: queryArg.search,
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Creator"],
       }),
       listCreatorSubAreas: build.query<
         ListCreatorSubAreasApiResponse,
@@ -346,6 +398,77 @@ const injectedRtkApi = api
         }),
         providesTags: ["Learner"],
       }),
+      searchCatalog: build.query<SearchCatalogApiResponse, SearchCatalogApiArg>(
+        {
+          query: (queryArg) => ({
+            url: `/learner/catalog/search`,
+            params: {
+              q: queryArg.q,
+              limit: queryArg.limit,
+            },
+          }),
+          providesTags: ["Learner"],
+        },
+      ),
+      listCatalogSubjects: build.query<
+        ListCatalogSubjectsApiResponse,
+        ListCatalogSubjectsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/catalog/subjects`,
+          params: {
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Learner"],
+      }),
+      getCatalogSubject: build.query<
+        GetCatalogSubjectApiResponse,
+        GetCatalogSubjectApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/catalog/subjects/${queryArg.subjectId}`,
+        }),
+        providesTags: ["Learner"],
+      }),
+      listSubjectTopics: build.query<
+        ListSubjectTopicsApiResponse,
+        ListSubjectTopicsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/catalog/subjects/${queryArg.subjectId}/topics`,
+          params: {
+            search: queryArg.search,
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Learner"],
+      }),
+      getCatalogTopic: build.query<
+        GetCatalogTopicApiResponse,
+        GetCatalogTopicApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/catalog/topics/${queryArg.subAreaId}`,
+        }),
+        providesTags: ["Learner"],
+      }),
+      listTopicQuestions: build.query<
+        ListTopicQuestionsApiResponse,
+        ListTopicQuestionsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/learner/catalog/topics/${queryArg.subAreaId}/questions`,
+          params: {
+            difficulty_level: queryArg.difficultyLevel,
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Learner"],
+      }),
       readDailyQuestionLearnerDailyQuestionGet: build.query<
         ReadDailyQuestionLearnerDailyQuestionGetApiResponse,
         ReadDailyQuestionLearnerDailyQuestionGetApiArg
@@ -440,6 +563,37 @@ const injectedRtkApi = api
           }),
           invalidatesTags: ["Learner"],
         }),
+      listMyQuestions: build.query<
+        ListMyQuestionsApiResponse,
+        ListMyQuestionsApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/questions/`,
+          params: {
+            search: queryArg.search,
+            subject_id: queryArg.subjectId,
+            sub_area_id: queryArg.subAreaId,
+            difficulty_level: queryArg.difficultyLevel,
+            tags: queryArg.tags,
+            is_verified: queryArg.isVerified,
+            is_active: queryArg.isActive,
+            page: queryArg.page,
+            page_size: queryArg.pageSize,
+          },
+        }),
+        providesTags: ["Questions"],
+      }),
+      createQuestion: build.mutation<
+        CreateQuestionApiResponse,
+        CreateQuestionApiArg
+      >({
+        query: (queryArg) => ({
+          url: `/questions/`,
+          method: "POST",
+          body: queryArg.questionCreate,
+        }),
+        invalidatesTags: ["Questions"],
+      }),
       deleteQuestion: build.mutation<
         DeleteQuestionApiResponse,
         DeleteQuestionApiArg
@@ -536,15 +690,12 @@ export type ListCreatorQuestionsApiArg = {
   tags?: string[] | null;
   isVerified?: boolean | null;
   isActive?: boolean | null;
+  /** Filter questions by creator ID */
+  creatorId?: string | null;
   /** Page number */
   page?: number;
   /** Number of items per page */
   pageSize?: number;
-};
-export type CreateQuestionApiResponse =
-  /** status 201 Successful Response */ QuestionResponse;
-export type CreateQuestionApiArg = {
-  questionCreate: QuestionCreate;
 };
 export type ListAdminRewardsApiResponse =
   /** status 200 Successful Response */ PaginatedResponseRewardResponse;
@@ -583,6 +734,17 @@ export type GetSubAreasBySubjectIdApiResponse =
 export type GetSubAreasBySubjectIdApiArg = {
   subjectId: number;
 };
+export type GetSubAreaApiResponse =
+  /** status 200 Successful Response */ SubAreaResponse;
+export type GetSubAreaApiArg = {
+  subAreaId: number;
+};
+export type UpdateSubAreaApiResponse =
+  /** status 200 Successful Response */ SubAreaResponse;
+export type UpdateSubAreaApiArg = {
+  subAreaId: number;
+  subAreaUpdate: SubAreaUpdate;
+};
 export type ListAdminSubjectsApiResponse =
   /** status 200 Successful Response */ PaginatedResponseSubjectResponse;
 export type ListAdminSubjectsApiArg = {
@@ -607,6 +769,26 @@ export type GetSubjectApiResponse =
   /** status 200 Successful Response */ SubjectResponse;
 export type GetSubjectApiArg = {
   subjectId: number;
+};
+export type UpdateSubjectApiResponse =
+  /** status 200 Successful Response */ SubjectResponse;
+export type UpdateSubjectApiArg = {
+  subjectId: number;
+  subjectUpdate: SubjectUpdate;
+};
+export type ListAdminTagsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseTagResponse;
+export type ListAdminTagsApiArg = {
+  /** Case-insensitive name search */
+  search?: string | null;
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+};
+export type DeleteTagApiResponse = unknown;
+export type DeleteTagApiArg = {
+  tagId: number;
 };
 export type RequestActivationApiResponse =
   /** status 200 Successful Response */ any;
@@ -638,6 +820,16 @@ export type UpdateCurrentUserApiArg = {
 export type VerifyEmailApiResponse = /** status 200 Successful Response */ any;
 export type VerifyEmailApiArg = {
   token: string;
+};
+export type ListCreatorRewardsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseRewardResponse;
+export type ListCreatorRewardsApiArg = {
+  /** Case-insensitive title search */
+  search?: string | null;
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
 };
 export type ListCreatorSubAreasApiResponse =
   /** status 200 Successful Response */ SubAreaResponse[];
@@ -711,6 +903,47 @@ export type GetAttemptHistoryLearnerAttemptsHistoryGetApiArg = {
   /** Number of items per page */
   pageSize?: number;
 };
+export type SearchCatalogApiResponse =
+  /** status 200 Successful Response */ CatalogSearchResponse;
+export type SearchCatalogApiArg = {
+  /** Search text (2-100 chars) */
+  q: string;
+  /** Max results per group */
+  limit?: number;
+};
+export type ListCatalogSubjectsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseCatalogSubject;
+export type ListCatalogSubjectsApiArg = {
+  page?: number;
+  pageSize?: number;
+};
+export type GetCatalogSubjectApiResponse =
+  /** status 200 Successful Response */ CatalogSubject;
+export type GetCatalogSubjectApiArg = {
+  subjectId: number;
+};
+export type ListSubjectTopicsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseCatalogTopic;
+export type ListSubjectTopicsApiArg = {
+  subjectId: number;
+  /** Case-insensitive topic name search */
+  search?: string | null;
+  page?: number;
+  pageSize?: number;
+};
+export type GetCatalogTopicApiResponse =
+  /** status 200 Successful Response */ CatalogTopicDetail;
+export type GetCatalogTopicApiArg = {
+  subAreaId: number;
+};
+export type ListTopicQuestionsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseTopicQuestion;
+export type ListTopicQuestionsApiArg = {
+  subAreaId: number;
+  difficultyLevel: number;
+  page?: number;
+  pageSize?: number;
+};
 export type ReadDailyQuestionLearnerDailyQuestionGetApiResponse =
   /** status 200 Successful Response */ DailyQuestionResponse;
 export type ReadDailyQuestionLearnerDailyQuestionGetApiArg = void;
@@ -757,6 +990,27 @@ export type SubscribeToSubjectLearnerSubscriptionsSubjectsSubjectIdPostApiArg =
   {
     subjectId: number;
   };
+export type ListMyQuestionsApiResponse =
+  /** status 200 Successful Response */ PaginatedResponseQuestionResponse;
+export type ListMyQuestionsApiArg = {
+  /** Case-insensitive title search */
+  search?: string | null;
+  subjectId?: number | null;
+  subAreaId?: number | null;
+  difficultyLevel?: number | null;
+  tags?: string[] | null;
+  isVerified?: boolean | null;
+  isActive?: boolean | null;
+  /** Page number */
+  page?: number;
+  /** Number of items per page */
+  pageSize?: number;
+};
+export type CreateQuestionApiResponse =
+  /** status 201 Successful Response */ QuestionResponse;
+export type CreateQuestionApiArg = {
+  questionCreate: QuestionCreate;
+};
 export type DeleteQuestionApiResponse =
   /** status 200 Successful Response */ any;
 export type DeleteQuestionApiArg = {
@@ -818,8 +1072,20 @@ export type AdminDailyQuestionResponse = {
   question_id: string;
 };
 export type CreatorSummaryResponse = {
+  /** Daily attempt counts over the previous 30 days. */
+  attempt_history?: {
+    [key: string]: number;
+  };
+  /** Top 5 subjects by active learner subscription count, sorted descending. */
+  learner_subscriptions?: {
+    [key: string]: number;
+  };
   question_attempts: number;
   question_likes: number;
+  /** Top 5 subjects by question count, sorted descending. */
+  questions_by_subject?: {
+    [key: string]: number;
+  };
   questions_count: number;
   tags_count: number;
 };
@@ -871,18 +1137,6 @@ export type ValidationError = {
 };
 export type HttpValidationError = {
   detail?: ValidationError[];
-};
-export type QuestionCreate = {
-  content?: QuestionContent | null;
-  correct_answer_index: number;
-  difficulty_level: number;
-  explanation?: QuestionExplanation | null;
-  options: QuestionOption[];
-  reward_id?: string | null;
-  sub_area_id?: number | null;
-  subject_id?: number | null;
-  tags?: string[];
-  title: string;
 };
 export type RewardResponse = {
   created_at: string;
@@ -937,6 +1191,12 @@ export type SubAreaCreate = {
   name: string;
   subject_id: number;
 };
+export type SubAreaUpdate = {
+  description?: string | null;
+  display_order?: number | null;
+  is_active?: boolean | null;
+  name?: string | null;
+};
 export type SubjectResponse = {
   created_at: string;
   creator_id?: string | null;
@@ -953,6 +1213,24 @@ export type PaginatedResponseSubjectResponse = {
 export type SubjectCreate = {
   description?: string | null;
   name: string;
+};
+export type SubjectUpdate = {
+  description?: string | null;
+  name?: string | null;
+};
+export type TagResponse = {
+  created_at: string;
+  creator_id?: string | null;
+  description?: string | null;
+  id: number;
+  name: string;
+  usage_count: number;
+};
+export type PaginatedResponseTagResponse = {
+  items: TagResponse[];
+  page: number;
+  page_size: number;
+  total: number;
 };
 export type TokenResponse = {
   access_token: string;
@@ -989,20 +1267,6 @@ export type CreatorSubjectSubscriptionResponse = {
   subscribed_at: string;
   subscription_id: string;
 };
-export type TagResponse = {
-  created_at: string;
-  creator_id?: string | null;
-  description?: string | null;
-  id: number;
-  name: string;
-  usage_count: number;
-};
-export type PaginatedResponseTagResponse = {
-  items: TagResponse[];
-  page: number;
-  page_size: number;
-  total: number;
-};
 export type TagCreate = {
   description?: string | null;
   name: string;
@@ -1035,6 +1299,83 @@ export type AttemptHistoryItem = {
 };
 export type PaginatedResponseAttemptHistoryItem = {
   items: AttemptHistoryItem[];
+  page: number;
+  page_size: number;
+  total: number;
+};
+export type CatalogSubject = {
+  description?: string | null;
+  id: number;
+  is_subscribed: boolean;
+  name: string;
+  /** Active + verified questions in the subject */
+  question_count: number;
+  /** Active sub-areas (topics) in the subject */
+  topic_count: number;
+};
+export type CatalogTopic = {
+  /** Distinct questions of the topic the learner attempted */
+  answered_count: number;
+  description?: string | null;
+  id: number;
+  is_subscribed: boolean;
+  name: string;
+  question_count: number;
+  subject_id: number;
+  subject_name: string;
+};
+export type CatalogSearchResponse = {
+  query: string;
+  subjects: CatalogSubject[];
+  topics: CatalogTopic[];
+};
+export type PaginatedResponseCatalogSubject = {
+  items: CatalogSubject[];
+  page: number;
+  page_size: number;
+  total: number;
+};
+export type PaginatedResponseCatalogTopic = {
+  items: CatalogTopic[];
+  page: number;
+  page_size: number;
+  total: number;
+};
+export type DifficultyCount = {
+  difficulty_level: number;
+  question_count: number;
+};
+export type CatalogTopicDetail = {
+  /** Distinct questions of the topic the learner attempted */
+  answered_count: number;
+  description?: string | null;
+  difficulty_counts: DifficultyCount[];
+  id: number;
+  is_subscribed: boolean;
+  name: string;
+  question_count: number;
+  subject_id: number;
+  subject_name: string;
+};
+export type MyAttemptSummary = {
+  attempt_id: string;
+  attempted_at: string;
+  is_correct: boolean;
+};
+export type TopicQuestion = {
+  /** 0..1, null when there are no attempts */
+  correct_rate?: number | null;
+  difficulty_level: number;
+  id: string;
+  is_verified: boolean;
+  /** Learner's first attempt, if any */
+  my_attempt?: MyAttemptSummary | null;
+  tags?: string[];
+  title: string;
+  total_attempts: number;
+};
+export type PaginatedResponseTopicQuestion = {
+  items: TopicQuestion[];
   page: number;
   page_size: number;
   total: number;
@@ -1103,6 +1444,18 @@ export type SubjectSubscriptionResponse = {
   subject_id: number;
   user_id: string;
 };
+export type QuestionCreate = {
+  content?: QuestionContent | null;
+  correct_answer_index: number;
+  difficulty_level: number;
+  explanation?: QuestionExplanation | null;
+  options: QuestionOption[];
+  reward_id?: string | null;
+  sub_area_id?: number | null;
+  subject_id?: number | null;
+  tags?: string[];
+  title: string;
+};
 export type QuestionUpdate = {
   content?: QuestionContent | null;
   correct_answer_index?: number | null;
@@ -1138,7 +1491,6 @@ export const {
   useLazyGetAdminSummaryQuery,
   useListCreatorQuestionsQuery,
   useLazyListCreatorQuestionsQuery,
-  useCreateQuestionMutation,
   useListAdminRewardsQuery,
   useLazyListAdminRewardsQuery,
   useCreateRewardMutation,
@@ -1147,12 +1499,19 @@ export const {
   useCreateSubAreaMutation,
   useGetSubAreasBySubjectIdQuery,
   useLazyGetSubAreasBySubjectIdQuery,
+  useGetSubAreaQuery,
+  useLazyGetSubAreaQuery,
+  useUpdateSubAreaMutation,
   useListAdminSubjectsQuery,
   useLazyListAdminSubjectsQuery,
   useCreateSubjectMutation,
   useDeleteSubjectMutation,
   useGetSubjectQuery,
   useLazyGetSubjectQuery,
+  useUpdateSubjectMutation,
+  useListAdminTagsQuery,
+  useLazyListAdminTagsQuery,
+  useDeleteTagMutation,
   useRequestActivationMutation,
   useGetCurrentUserQuery,
   useLazyGetCurrentUserQuery,
@@ -1162,6 +1521,8 @@ export const {
   useUpdateCurrentUserMutation,
   useVerifyEmailQuery,
   useLazyVerifyEmailQuery,
+  useListCreatorRewardsQuery,
+  useLazyListCreatorRewardsQuery,
   useListCreatorSubAreasQuery,
   useLazyListCreatorSubAreasQuery,
   useCreatorSubscribeToSubAreaMutation,
@@ -1178,6 +1539,18 @@ export const {
   useCreateAttemptLearnerAttemptsPostMutation,
   useGetAttemptHistoryLearnerAttemptsHistoryGetQuery,
   useLazyGetAttemptHistoryLearnerAttemptsHistoryGetQuery,
+  useSearchCatalogQuery,
+  useLazySearchCatalogQuery,
+  useListCatalogSubjectsQuery,
+  useLazyListCatalogSubjectsQuery,
+  useGetCatalogSubjectQuery,
+  useLazyGetCatalogSubjectQuery,
+  useListSubjectTopicsQuery,
+  useLazyListSubjectTopicsQuery,
+  useGetCatalogTopicQuery,
+  useLazyGetCatalogTopicQuery,
+  useListTopicQuestionsQuery,
+  useLazyListTopicQuestionsQuery,
   useReadDailyQuestionLearnerDailyQuestionGetQuery,
   useLazyReadDailyQuestionLearnerDailyQuestionGetQuery,
   useReadMyProfileLearnerMeGetQuery,
@@ -1192,6 +1565,9 @@ export const {
   useLazyListMySubjectsLearnerSubscriptionsSubjectsGetQuery,
   useUnsubscribeFromSubjectLearnerSubscriptionsSubjectsSubjectIdDeleteMutation,
   useSubscribeToSubjectLearnerSubscriptionsSubjectsSubjectIdPostMutation,
+  useListMyQuestionsQuery,
+  useLazyListMyQuestionsQuery,
+  useCreateQuestionMutation,
   useDeleteQuestionMutation,
   useGetQuestionQuery,
   useLazyGetQuestionQuery,
