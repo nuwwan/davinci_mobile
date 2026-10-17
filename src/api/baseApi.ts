@@ -2,7 +2,7 @@
  * RTK Query base API for the DaVinci backend (mobile).
  *
  * Mirrors davinci_web/src/api/baseApi.ts in shape, with two differences:
- *   - The base URL comes from EXPO_PUBLIC_API_URL (Expo's runtime env var).
+ *   - The base URL is resolved in `baseUrl.ts` (LAN IP on a physical device).
  *   - Reauth handling is identical (mutex-guarded single-flight refresh) and
  *     drives the same authSlice actions.
  */
@@ -16,9 +16,7 @@ import {
 import { Mutex } from 'async-mutex'
 import type { RootState } from '../store'
 import { loggedOut, tokensReceived } from '../features/auth/authSlice'
-
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8000'
+import { API_BASE_URL } from './baseUrl'
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,

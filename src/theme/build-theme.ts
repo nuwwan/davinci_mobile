@@ -1,4 +1,4 @@
-import type { Theme as NavTheme } from '@react-navigation/native';
+import type { Theme as NavTheme } from 'expo-router/react-navigation';
 
 import type { ThemeColors } from './colors';
 import { fontFamilies } from './typography';

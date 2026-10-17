@@ -16,14 +16,35 @@ from the backend's OpenAPI spec.
 
    ```bash
    cp .env.example .env.local
-   # then edit EXPO_PUBLIC_API_URL if the backend isn't on localhost:8000
+   # leave EXPO_PUBLIC_API_URL=http://localhost:8000 for local FastAPI
    ```
 
-3. Start the app
+   On a **physical phone** Expo Go rewrites `localhost` to your Mac's LAN IP
+   automatically (the same host Metro already uses). Do not hard-code
+   `localhost` as the phone's API — that points at the phone, not your Mac.
+
+3. Start the backend so the phone can reach it
+
+   Bind FastAPI to all interfaces (not just `127.0.0.1`):
+
+   ```bash
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+
+   Phone and Mac must be on the **same Wi-Fi**. Confirm from Safari on the
+   phone: `http://YOUR_MAC_IP:8000/docs` (Mac IP: `ipconfig getifaddr en0`).
+
+4. Start the app
 
    ```bash
    npx expo start
    ```
+
+   Scan the QR code in Expo Go. The Metro log should print
+   `[api] base URL → http://192.168.x.x:8000` (your LAN IP, not localhost).
+
+   `npx expo start --tunnel` only tunnels Metro, not FastAPI. If the phone
+   cannot open `/docs`, fix Wi-Fi / macOS firewall / backend bind first.
 
 In the output you'll find options to open the app in a
 

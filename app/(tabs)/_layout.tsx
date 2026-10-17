@@ -33,7 +33,9 @@ export default function TabLayout() {
           paddingBottom: Math.max(insets.bottom, 8),
         },
         tabBarLabelStyle: { fontFamily: fontFamilies.medium, fontSize: 11, marginTop: 2 },
-        tabBarIcon: ({ color }) => <Icon name={TAB_ICON[route.name] ?? 'house'} tint={color} size={sizes.tabIcon} />,
+        tabBarIcon: ({ color }) => (
+          <Icon name={TAB_ICON[route.name] ?? 'house'} tint={String(color)} size={sizes.tabIcon} />
+        ),
       })}>
       <Tabs.Screen name="index" options={{ title: 'Home' }} />
       <Tabs.Screen name="questions" options={{ title: 'Questions' }} />
