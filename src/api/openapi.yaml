@@ -428,6 +428,96 @@ components:
           type: array
       title: HTTPValidationError
       type: object
+    LearnerDailyQuestionSnapshot:
+      description: Today's scheduled daily question, if one exists.
+      properties:
+        difficulty_level:
+          title: Difficulty Level
+          type: integer
+        is_answered:
+          title: Is Answered
+          type: boolean
+        question_id:
+          format: uuid
+          title: Question Id
+          type: string
+        title:
+          title: Title
+          type: string
+      required:
+      - question_id
+      - title
+      - difficulty_level
+      - is_answered
+      title: LearnerDailyQuestionSnapshot
+      type: object
+    LearnerDashboardResponse:
+      properties:
+        attempt_history:
+          additionalProperties:
+            type: integer
+          description: Sparse daily attempt counts for the previous 30 days.
+          title: Attempt History
+          type: object
+        attempts_by_sub_area:
+          additionalProperties:
+            type: integer
+          title: Attempts By Sub Area
+          type: object
+        attempts_by_subject:
+          additionalProperties:
+            type: integer
+          title: Attempts By Subject
+          type: object
+        best_streak:
+          title: Best Streak
+          type: integer
+        correct_attempts:
+          title: Correct Attempts
+          type: integer
+        correct_by_subject:
+          additionalProperties:
+            type: integer
+          title: Correct By Subject
+          type: object
+        current_streak:
+          title: Current Streak
+          type: integer
+        daily_question:
+          anyOf:
+          - $ref: '#/components/schemas/LearnerDailyQuestionSnapshot'
+          - type: 'null'
+        first_name:
+          title: First Name
+          type: string
+        recent_attempts:
+          items:
+            $ref: '#/components/schemas/LearnerRecentAttempt'
+          title: Recent Attempts
+          type: array
+        sub_area_count:
+          title: Sub Area Count
+          type: integer
+        subject_count:
+          title: Subject Count
+          type: integer
+        total_attempts:
+          title: Total Attempts
+          type: integer
+        total_learning_minutes:
+          title: Total Learning Minutes
+          type: integer
+      required:
+      - first_name
+      - current_streak
+      - best_streak
+      - total_learning_minutes
+      - subject_count
+      - sub_area_count
+      - total_attempts
+      - correct_attempts
+      title: LearnerDashboardResponse
+      type: object
     LearnerProfileDetail:
       description: Fields from the LearnerProfile row (optional — may not exist yet).
       properties:
@@ -551,6 +641,39 @@ components:
       - last_name
       - email
       title: LearnerProfileUpdate
+      type: object
+    LearnerRecentAttempt:
+      description: One of the learner's most recent attempts.
+      properties:
+        attempt_id:
+          format: uuid
+          title: Attempt Id
+          type: string
+        attempted_at:
+          format: date-time
+          title: Attempted At
+          type: string
+        is_correct:
+          title: Is Correct
+          type: boolean
+        question_title:
+          title: Question Title
+          type: string
+        score:
+          default: 0
+          title: Score
+          type: integer
+        time_taken_seconds:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Time Taken Seconds
+      required:
+      - attempt_id
+      - question_title
+      - is_correct
+      - attempted_at
+      title: LearnerRecentAttempt
       type: object
     MyAttemptSummary:
       properties:
@@ -3312,6 +3435,27 @@ paths:
       security:
       - OAuth2PasswordBearer: []
       summary: Get today's daily question
+      tags:
+      - Learner
+  /learner/dashboard:
+    get:
+      description: Returns identity, streak, subscription counts, attempt stats, today's daily question,
+        recent attempts, and per-subject/sub-area breakdowns for the authenticated learner.
+      operationId: getLearnerDashboard
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearnerDashboardResponse'
+          description: Successful Response
+        '401':
+          description: Not authenticated
+        '403':
+          description: Operation not permitted for this role
+      security:
+      - OAuth2PasswordBearer: []
+      summary: Learner dashboard snapshot
       tags:
       - Learner
   /learner/me:

@@ -476,6 +476,13 @@ const injectedRtkApi = api
         query: () => ({ url: `/learner/daily-question` }),
         providesTags: ["Learner"],
       }),
+      getLearnerDashboard: build.query<
+        GetLearnerDashboardApiResponse,
+        GetLearnerDashboardApiArg
+      >({
+        query: () => ({ url: `/learner/dashboard` }),
+        providesTags: ["Learner"],
+      }),
       readMyProfileLearnerMeGet: build.query<
         ReadMyProfileLearnerMeGetApiResponse,
         ReadMyProfileLearnerMeGetApiArg
@@ -947,6 +954,9 @@ export type ListTopicQuestionsApiArg = {
 export type ReadDailyQuestionLearnerDailyQuestionGetApiResponse =
   /** status 200 Successful Response */ DailyQuestionResponse;
 export type ReadDailyQuestionLearnerDailyQuestionGetApiArg = void;
+export type GetLearnerDashboardApiResponse =
+  /** status 200 Successful Response */ LearnerDashboardResponse;
+export type GetLearnerDashboardApiArg = void;
 export type ReadMyProfileLearnerMeGetApiResponse =
   /** status 200 Successful Response */ LearnerProfileResponse;
 export type ReadMyProfileLearnerMeGetApiArg = void;
@@ -1386,6 +1396,45 @@ export type DailyQuestionResponse = {
   is_answered: boolean;
   question: QuestionResponse;
 };
+export type LearnerDailyQuestionSnapshot = {
+  difficulty_level: number;
+  is_answered: boolean;
+  question_id: string;
+  title: string;
+};
+export type LearnerRecentAttempt = {
+  attempt_id: string;
+  attempted_at: string;
+  is_correct: boolean;
+  question_title: string;
+  score?: number;
+  time_taken_seconds?: number | null;
+};
+export type LearnerDashboardResponse = {
+  /** Sparse daily attempt counts for the previous 30 days. */
+  attempt_history?: {
+    [key: string]: number;
+  };
+  attempts_by_sub_area?: {
+    [key: string]: number;
+  };
+  attempts_by_subject?: {
+    [key: string]: number;
+  };
+  best_streak: number;
+  correct_attempts: number;
+  correct_by_subject?: {
+    [key: string]: number;
+  };
+  current_streak: number;
+  daily_question?: LearnerDailyQuestionSnapshot | null;
+  first_name: string;
+  recent_attempts?: LearnerRecentAttempt[];
+  sub_area_count: number;
+  subject_count: number;
+  total_attempts: number;
+  total_learning_minutes: number;
+};
 export type LearnerProfileDetail = {
   best_streak?: number;
   current_streak?: number;
@@ -1553,6 +1602,8 @@ export const {
   useLazyListTopicQuestionsQuery,
   useReadDailyQuestionLearnerDailyQuestionGetQuery,
   useLazyReadDailyQuestionLearnerDailyQuestionGetQuery,
+  useGetLearnerDashboardQuery,
+  useLazyGetLearnerDashboardQuery,
   useReadMyProfileLearnerMeGetQuery,
   useLazyReadMyProfileLearnerMeGetQuery,
   useUpdateMyProfileLearnerMePatchMutation,
