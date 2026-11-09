@@ -161,6 +161,74 @@ components:
       - selected_option_index
       title: AttemptSubmit
       type: object
+    Body_createQuestion:
+      properties:
+        answer_image_indexes:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          description: Option indexes matching answer_images, e.g. 0, 2
+          title: Answer Image Indexes
+        answer_images:
+          anyOf:
+          - items:
+              format: binary
+              type: string
+            type: array
+          - type: 'null'
+          description: Optional answer images
+          title: Answer Images
+        payload:
+          description: QuestionCreate JSON
+          title: Payload
+          type: string
+        question_image:
+          anyOf:
+          - format: binary
+            type: string
+          - type: 'null'
+          description: Optional question stem image
+          title: Question Image
+      required:
+      - payload
+      title: Body_createQuestion
+      type: object
+    Body_updateQuestion:
+      properties:
+        answer_image_indexes:
+          anyOf:
+          - items:
+              type: integer
+            type: array
+          - type: 'null'
+          description: Option indexes matching answer_images, e.g. 0, 2
+          title: Answer Image Indexes
+        answer_images:
+          anyOf:
+          - items:
+              format: binary
+              type: string
+            type: array
+          - type: 'null'
+          description: Replacement answer images
+          title: Answer Images
+        payload:
+          description: QuestionUpdate JSON
+          title: Payload
+          type: string
+        question_image:
+          anyOf:
+          - format: binary
+            type: string
+          - type: 'null'
+          description: Replacement question stem image
+          title: Question Image
+      required:
+      - payload
+      title: Body_updateQuestion
+      type: object
     CatalogSearchResponse:
       properties:
         query:
@@ -935,6 +1003,7 @@ components:
           anyOf:
           - type: string
           - type: 'null'
+          description: Optional question-stem image URL, set by attaching `question_image` on create/update.
           title: Image Url
         media_type:
           default: text
@@ -946,65 +1015,6 @@ components:
           - type: 'null'
           title: Text
       title: QuestionContent
-      type: object
-    QuestionCreate:
-      properties:
-        content:
-          anyOf:
-          - $ref: '#/components/schemas/QuestionContent'
-          - type: 'null'
-        correct_answer_index:
-          minimum: 0.0
-          title: Correct Answer Index
-          type: integer
-        difficulty_level:
-          maximum: 5.0
-          minimum: 1.0
-          title: Difficulty Level
-          type: integer
-        explanation:
-          anyOf:
-          - $ref: '#/components/schemas/QuestionExplanation'
-          - type: 'null'
-        options:
-          items:
-            $ref: '#/components/schemas/QuestionOption'
-          maxItems: 10
-          minItems: 2
-          title: Options
-          type: array
-        reward_id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Reward Id
-        sub_area_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Sub Area Id
-        subject_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Subject Id
-        tags:
-          items:
-            type: string
-          title: Tags
-          type: array
-        title:
-          maxLength: 255
-          minLength: 1
-          title: Title
-          type: string
-      required:
-      - title
-      - options
-      - correct_answer_index
-      - difficulty_level
-      title: QuestionCreate
       type: object
     QuestionExplanation:
       properties:
@@ -1036,6 +1046,7 @@ components:
           anyOf:
           - type: string
           - type: 'null'
+          description: Optional answer image URL, set by attaching `answer_images` on create/update.
           title: Image Url
         index:
           maximum: 10.0
@@ -1160,80 +1171,6 @@ components:
           title: Total Attempts
           type: integer
       title: QuestionStats
-      type: object
-    QuestionUpdate:
-      properties:
-        content:
-          anyOf:
-          - $ref: '#/components/schemas/QuestionContent'
-          - type: 'null'
-        correct_answer_index:
-          anyOf:
-          - minimum: 0.0
-            type: integer
-          - type: 'null'
-          title: Correct Answer Index
-        difficulty_level:
-          anyOf:
-          - maximum: 5.0
-            minimum: 1.0
-            type: integer
-          - type: 'null'
-          title: Difficulty Level
-        explanation:
-          anyOf:
-          - $ref: '#/components/schemas/QuestionExplanation'
-          - type: 'null'
-        is_active:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Active
-        is_verified:
-          anyOf:
-          - type: boolean
-          - type: 'null'
-          title: Is Verified
-        options:
-          anyOf:
-          - items:
-              $ref: '#/components/schemas/QuestionOption'
-            maxItems: 10
-            minItems: 2
-            type: array
-          - type: 'null'
-          title: Options
-        reward_id:
-          anyOf:
-          - format: uuid
-            type: string
-          - type: 'null'
-          title: Reward Id
-        sub_area_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Sub Area Id
-        subject_id:
-          anyOf:
-          - type: integer
-          - type: 'null'
-          title: Subject Id
-        tags:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Tags
-        title:
-          anyOf:
-          - maxLength: 255
-            minLength: 1
-            type: string
-          - type: 'null'
-          title: Title
-      title: QuestionUpdate
       type: object
     RefreshRequest:
       properties:
@@ -1542,6 +1479,75 @@ components:
           - type: 'null'
           title: Name
       title: SubjectUpdate
+      type: object
+    SubscribedSubAreaResponse:
+      description: Shape returned by GET /learner/subscriptions/sub-areas
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        name:
+          title: Name
+          type: string
+        subject_id:
+          title: Subject Id
+          type: integer
+      required:
+      - id
+      - name
+      - subject_id
+      title: SubscribedSubAreaResponse
+      type: object
+    SubscribedSubjectResponse:
+      description: Shape returned by GET /learner/subscriptions/subjects
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        name:
+          title: Name
+          type: string
+      required:
+      - id
+      - name
+      title: SubscribedSubjectResponse
+      type: object
+    SubscribedSubjectWithSubAreasResponse:
+      description: |-
+        Shape returned by GET /learner/subscriptions/overview —
+        each subscribed subject with only the sub-areas the learner has also subscribed to.
+      properties:
+        description:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Description
+        id:
+          title: Id
+          type: integer
+        name:
+          title: Name
+          type: string
+        sub_areas:
+          default: []
+          items:
+            $ref: '#/components/schemas/SubscribedSubAreaResponse'
+          title: Sub Areas
+          type: array
+      required:
+      - id
+      - name
+      title: SubscribedSubjectWithSubAreasResponse
       type: object
     TagCreate:
       properties:
@@ -3531,6 +3537,24 @@ paths:
       summary: Create / replace my profile
       tags:
       - Learner
+  /learner/subscriptions/overview:
+    get:
+      operationId: get_subscriptions_overview_learner_subscriptions_overview_get
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/SubscribedSubjectWithSubAreasResponse'
+                title: Response Get Subscriptions Overview Learner Subscriptions Overview Get
+                type: array
+          description: Successful Response
+      security:
+      - OAuth2PasswordBearer: []
+      summary: All subscribed subjects with their subscribed sub-areas
+      tags:
+      - Learner
   /learner/subscriptions/sub-areas:
     get:
       operationId: list_my_sub_areas_learner_subscriptions_sub_areas_get
@@ -3540,13 +3564,13 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/SubAreaSubscriptionResponse'
+                  $ref: '#/components/schemas/SubscribedSubAreaResponse'
                 title: Response List My Sub Areas Learner Subscriptions Sub Areas Get
                 type: array
           description: Successful Response
       security:
       - OAuth2PasswordBearer: []
-      summary: List my sub-area subscriptions
+      summary: List sub-areas I am subscribed to
       tags:
       - Learner
   /learner/subscriptions/sub-areas/{sub_area_id}:
@@ -3612,13 +3636,13 @@ paths:
             application/json:
               schema:
                 items:
-                  $ref: '#/components/schemas/SubjectSubscriptionResponse'
+                  $ref: '#/components/schemas/SubscribedSubjectResponse'
                 title: Response List My Subjects Learner Subscriptions Subjects Get
                 type: array
           description: Successful Response
       security:
       - OAuth2PasswordBearer: []
-      summary: List my subject subscriptions
+      summary: List subjects I am subscribed to
       tags:
       - Learner
   /learner/subscriptions/subjects/{subject_id}:
@@ -3788,9 +3812,9 @@ paths:
       operationId: createQuestion
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/QuestionCreate'
+              $ref: '#/components/schemas/Body_createQuestion'
         required: true
       responses:
         '201':
@@ -3811,7 +3835,7 @@ paths:
           description: Validation Error
       security:
       - OAuth2PasswordBearer: []
-      summary: Create a new question
+      summary: Create a new question (optional stem + answer images)
       tags:
       - Questions
   /questions/{question_id}:
@@ -3897,9 +3921,9 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/QuestionUpdate'
+              $ref: '#/components/schemas/Body_updateQuestion'
         required: true
       responses:
         '200':

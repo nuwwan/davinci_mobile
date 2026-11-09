@@ -512,6 +512,13 @@ const injectedRtkApi = api
         }),
         invalidatesTags: ["Learner"],
       }),
+      getSubscriptionsOverviewLearnerSubscriptionsOverviewGet: build.query<
+        GetSubscriptionsOverviewLearnerSubscriptionsOverviewGetApiResponse,
+        GetSubscriptionsOverviewLearnerSubscriptionsOverviewGetApiArg
+      >({
+        query: () => ({ url: `/learner/subscriptions/overview` }),
+        providesTags: ["Learner"],
+      }),
       listMySubAreasLearnerSubscriptionsSubAreasGet: build.query<
         ListMySubAreasLearnerSubscriptionsSubAreasGetApiResponse,
         ListMySubAreasLearnerSubscriptionsSubAreasGetApiArg
@@ -597,7 +604,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/questions/`,
           method: "POST",
-          body: queryArg.questionCreate,
+          body: queryArg.bodyCreateQuestion,
         }),
         invalidatesTags: ["Questions"],
       }),
@@ -625,7 +632,7 @@ const injectedRtkApi = api
         query: (queryArg) => ({
           url: `/questions/${queryArg.questionId}`,
           method: "PUT",
-          body: queryArg.questionUpdate,
+          body: queryArg.bodyUpdateQuestion,
         }),
         invalidatesTags: ["Questions"],
       }),
@@ -970,8 +977,12 @@ export type CreateMyProfileLearnerMePutApiResponse =
 export type CreateMyProfileLearnerMePutApiArg = {
   learnerProfileUpdate: LearnerProfileUpdate;
 };
+export type GetSubscriptionsOverviewLearnerSubscriptionsOverviewGetApiResponse =
+  /** status 200 Successful Response */ SubscribedSubjectWithSubAreasResponse[];
+export type GetSubscriptionsOverviewLearnerSubscriptionsOverviewGetApiArg =
+  void;
 export type ListMySubAreasLearnerSubscriptionsSubAreasGetApiResponse =
-  /** status 200 Successful Response */ SubAreaSubscriptionResponse[];
+  /** status 200 Successful Response */ SubscribedSubAreaResponse[];
 export type ListMySubAreasLearnerSubscriptionsSubAreasGetApiArg = void;
 export type UnsubscribeFromSubAreaLearnerSubscriptionsSubAreasSubAreaIdDeleteApiResponse =
   /** status 200 Successful Response */ any;
@@ -986,7 +997,7 @@ export type SubscribeToSubAreaLearnerSubscriptionsSubAreasSubAreaIdPostApiArg =
     subAreaId: number;
   };
 export type ListMySubjectsLearnerSubscriptionsSubjectsGetApiResponse =
-  /** status 200 Successful Response */ SubjectSubscriptionResponse[];
+  /** status 200 Successful Response */ SubscribedSubjectResponse[];
 export type ListMySubjectsLearnerSubscriptionsSubjectsGetApiArg = void;
 export type UnsubscribeFromSubjectLearnerSubscriptionsSubjectsSubjectIdDeleteApiResponse =
   /** status 200 Successful Response */ any;
@@ -1019,7 +1030,7 @@ export type ListMyQuestionsApiArg = {
 export type CreateQuestionApiResponse =
   /** status 201 Successful Response */ QuestionResponse;
 export type CreateQuestionApiArg = {
-  questionCreate: QuestionCreate;
+  bodyCreateQuestion: BodyCreateQuestion;
 };
 export type DeleteQuestionApiResponse =
   /** status 200 Successful Response */ any;
@@ -1037,7 +1048,7 @@ export type UpdateQuestionApiResponse =
   /** status 200 Successful Response */ QuestionResponse;
 export type UpdateQuestionApiArg = {
   questionId: string;
-  questionUpdate: QuestionUpdate;
+  bodyUpdateQuestion: BodyUpdateQuestion;
 };
 export type GetQuestionStatsApiResponse =
   /** status 200 Successful Response */ QuestionStats;
@@ -1101,6 +1112,7 @@ export type CreatorSummaryResponse = {
 };
 export type QuestionContent = {
   alt_text?: string | null;
+  /** Optional question-stem image URL, set by attaching `question_image` on create/update. */
   image_url?: string | null;
   media_type?: string;
   text?: string | null;
@@ -1112,6 +1124,7 @@ export type QuestionExplanation = {
 };
 export type QuestionOption = {
   alt_text?: string | null;
+  /** Optional answer image URL, set by attaching `answer_images` on create/update. */
   image_url?: string | null;
   index: number;
   text?: string | null;
@@ -1475,6 +1488,18 @@ export type LearnerProfileUpdate = {
   first_name: string;
   last_name: string;
 };
+export type SubscribedSubAreaResponse = {
+  description?: string | null;
+  id: number;
+  name: string;
+  subject_id: number;
+};
+export type SubscribedSubjectWithSubAreasResponse = {
+  description?: string | null;
+  id: number;
+  name: string;
+  sub_areas?: SubscribedSubAreaResponse[];
+};
 export type SubAreaSubscriptionResponse = {
   created_at: string;
   end_date?: string | null;
@@ -1483,6 +1508,11 @@ export type SubAreaSubscriptionResponse = {
   start_date: string;
   sub_area_id: number;
   user_id: string;
+};
+export type SubscribedSubjectResponse = {
+  description?: string | null;
+  id: number;
+  name: string;
 };
 export type SubjectSubscriptionResponse = {
   created_at: string;
@@ -1493,31 +1523,25 @@ export type SubjectSubscriptionResponse = {
   subject_id: number;
   user_id: string;
 };
-export type QuestionCreate = {
-  content?: QuestionContent | null;
-  correct_answer_index: number;
-  difficulty_level: number;
-  explanation?: QuestionExplanation | null;
-  options: QuestionOption[];
-  reward_id?: string | null;
-  sub_area_id?: number | null;
-  subject_id?: number | null;
-  tags?: string[];
-  title: string;
+export type BodyCreateQuestion = {
+  /** Option indexes matching answer_images, e.g. 0, 2 */
+  answer_image_indexes?: number[] | null;
+  /** Optional answer images */
+  answer_images?: Blob[] | null;
+  /** QuestionCreate JSON */
+  payload: string;
+  /** Optional question stem image */
+  question_image?: Blob | null;
 };
-export type QuestionUpdate = {
-  content?: QuestionContent | null;
-  correct_answer_index?: number | null;
-  difficulty_level?: number | null;
-  explanation?: QuestionExplanation | null;
-  is_active?: boolean | null;
-  is_verified?: boolean | null;
-  options?: QuestionOption[] | null;
-  reward_id?: string | null;
-  sub_area_id?: number | null;
-  subject_id?: number | null;
-  tags?: string[] | null;
-  title?: string | null;
+export type BodyUpdateQuestion = {
+  /** Option indexes matching answer_images, e.g. 0, 2 */
+  answer_image_indexes?: number[] | null;
+  /** Replacement answer images */
+  answer_images?: Blob[] | null;
+  /** QuestionUpdate JSON */
+  payload: string;
+  /** Replacement question stem image */
+  question_image?: Blob | null;
 };
 export type QuestionStats = {
   accuracy?: number | null;
@@ -1608,6 +1632,8 @@ export const {
   useLazyReadMyProfileLearnerMeGetQuery,
   useUpdateMyProfileLearnerMePatchMutation,
   useCreateMyProfileLearnerMePutMutation,
+  useGetSubscriptionsOverviewLearnerSubscriptionsOverviewGetQuery,
+  useLazyGetSubscriptionsOverviewLearnerSubscriptionsOverviewGetQuery,
   useListMySubAreasLearnerSubscriptionsSubAreasGetQuery,
   useLazyListMySubAreasLearnerSubscriptionsSubAreasGetQuery,
   useUnsubscribeFromSubAreaLearnerSubscriptionsSubAreasSubAreaIdDeleteMutation,
